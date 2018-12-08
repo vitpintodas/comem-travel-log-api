@@ -20,7 +20,7 @@ app.use(express.json());
 app.get('/', (req, res) => res.redirect('/api'));
 app.use('/api', apiRouter);
 
-app.use((req, res, next) => next(createError(404, 'No resource found matching the request URI.')));
+app.use((req, res, next) => next(createError(404, 'resourceNotFound', 'No resource found matching the request URI.')));
 
 app.use((err, req, res, next) => {
   console.warn(err.stack);

@@ -1,14 +1,15 @@
 const express = require('express');
 
 const { version } = require('../config');
-const usersRouter = require('./users/users.routes');
+const authRoutes = require('./auth/auth.routes');
+const usersRoutes = require('./users/users.routes');
 
 const router = express.Router();
 
 // GET /api
 router.get('/', (req, res) => res.send({ version }));
 
-// Routes under /api/users
-router.use('/users', usersRouter);
+router.use('/auth', authRoutes);
+router.use('/users', usersRoutes);
 
 module.exports = router;

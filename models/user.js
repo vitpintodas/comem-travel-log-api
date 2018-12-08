@@ -53,6 +53,11 @@ userSchema.virtual('href').get(function() {
   return `/api/users/${this.apiId}`;
 });
 
+userSchema.methods.parseFrom = function(body) {
+  this.set(this.constructor.parse(body));
+  return this;
+};
+
 userSchema.methods.setPassword = async function(password) {
   if (password) {
     this._password = password;
@@ -63,20 +68,28 @@ userSchema.methods.setPassword = async function(password) {
   }
 };
 
+userSchema.methods.toJSON = function() {
+  return {
+    id: this.apiId,
+    ...pick(this, 'name', 'href', 'createdAt', 'updatedAt')
+  };
+};
+
 userSchema.statics.parse = function(body) {
   return pick(body, 'name');
 };
 
-userSchema.set('toJSON', {
-  transform: transformJson,
-  virtuals: true
+userSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
 });
 
-userSchema.pre('validate', function(next) {
-  Promise.resolve().then(generateUniqueApiId.bind(this)).then(() => next(), next);
-});
+userSchema.pre('validate', setUniqueApiId);
 
-async function generateUniqueApiId() {
+async function setUniqueApiId() {
+  if (this.apiId) {
+    return;
+  }
 
   let attempts = 0;
   do {
@@ -91,14 +104,6 @@ async function generateUniqueApiId() {
   } while (attempts < 10);
 
   throw new Error(`Could not find a unique API ID after ${attempts} attempts`)
-}
-
-function transformJson(doc, json, options) {
-  json.id = json.apiId;
-  delete json._id;
-  delete json.__v;
-  delete json.apiId;
-  delete json.passwordHash;
 }
 
 function validateNameAvailable(value) {

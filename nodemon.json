@@ -6,6 +6,7 @@
   ],
   "script": "bin/www",
   "watch": [
+    ".env",
     "api/**/*.js",
     "app.js",
     "bin/www",

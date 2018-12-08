@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const { defaults, isInteger } = require('lodash');
+const { defaults, includes, isInteger } = require('lodash');
 const { join: joinPath, resolve: resolvePath } = require('path');
 const joinUrl = require('url-join');
 
@@ -13,7 +13,8 @@ const configFromEnvironment = {
   baseUrl: process.env.BASE_URL,
   bcryptCost: parseEnvInt('BCRYPT_COST'),
   db: process.env.DATABASE_URL || process.env.MONGODB_URL,
-  port: process.env.PORT
+  port: process.env.PORT,
+  secret: process.env.SECRET
 };
 
 const defaultConfig = {
@@ -40,6 +41,10 @@ if (typeof config.db !== 'string') {
   throw new Error(`Configuration property "bcryptCost" must be an integer, but its type is ${typeof config.bcryptCost}`);
 } else if (config.bcryptCost < 1) {
   throw new Error(`Configuration property "bcryptCost" must be greater than or equal to 1, but its value is ${config.bcryptCost}`);
+} else if (config.secret !== undefined && typeof config.secret !== 'string') {
+  throw new Error(`Configuration property "secret" must be a string, but its type is ${typeof config.secret}`);
+} else if (!config.secret) {
+  throw new Error('Configuration property "secret" is required; set the $SECRET environment variable');
 }
 
 function parseEnvInt(name) {

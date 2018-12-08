@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-
 const config = require('../../config');
 const User = require('../../models/user');
 const { createError } = require('../../utils/errors');
@@ -7,7 +5,7 @@ const { route } = require('../../utils/express');
 
 exports.createUser = route(async (req, res) => {
 
-  const user = new User(User.parse(req.body));
+  const user = new User().parseFrom(req.body);
   await user.setPassword(req.body.password);
   await user.save();
 
@@ -30,20 +28,25 @@ exports.retrieveUser = route(async (req, res) => {
 
 exports.updateUser = route(async (req, res) => {
 
-  req.user.set(User.parse(req.body));
+  const user = req.user;
+  user.parseFrom(req.body);
   if (req.body.password) {
-    await req.user.setPassword(req.body.password);
+    await user.setPassword(req.body.password);
   }
 
-  await req.user.save();
+  await user.save();
 
-  res.send(req.user);
+  res.send(user);
 });
 
 exports.removeUser = route(async (req, res) => {
   await req.user.remove();
   res.sendStatus(204);
 });
+
+exports.canModify = function(req) {
+  return req.currentUser && req.user && req.currentUser.apiId === req.user.apiId;
+};
 
 exports.loadUserById = route(async (req, res, next) => {
 
@@ -62,5 +65,5 @@ exports.loadUserById = route(async (req, res, next) => {
 });
 
 function userNotFound(id) {
-  return createError(404, 'record.notFound', `No user found with ID ${id}`);
+  return createError(404, 'recordNotFound', `No user found with ID ${id}`);
 }
