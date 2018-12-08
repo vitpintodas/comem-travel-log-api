@@ -1,4 +1,6 @@
-const { isArray, pick } = require('lodash');
+const { camelize, humanize } = require('inflection');
+const { get, isArray, pick } = require('lodash');
+const mongoose = require('mongoose');
 const joinUrl = require('url-join');
 const uuid = require('uuid/v4');
 
@@ -57,6 +59,93 @@ exports.parsePlugin = function(schema) {
 
     return pick(body, ...editableProperties);
   };
+};
+
+exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
+
+  const modelName = get(options, 'modelName', ref);
+  const humanModelName = get(options, 'humanModelName');
+  const property = get(options, 'property', camelize(ref, true));
+  const hiddenIdProperty = get(options, 'hiddenIdProperty', `_${property}Id`);
+  const virtualHrefProperty = get(options, 'virtualHrefProperty', `${property}Href`);
+  const virtualIdProperty = get(options, 'virtualIdProperty', `${property}Id`);
+
+  schema.add({
+    [property]: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref,
+      default: null,
+      validate: {
+        validator: validateRelatedHref
+      }
+    }
+  });
+
+  schema.virtual(virtualIdProperty).get(getRelatedId).set(setRelatedId);
+  schema.virtual(virtualHrefProperty).get(getRelatedHref).set(setRelatedHref);
+
+  schema.pre('validate', loadRelatedHref);
+
+  function getHumanModelName() {
+    return humanModelName || humanize(mongoose.model(ref).modelName, true);
+  }
+
+  function getRelatedHref() {
+    if (!this[property] || !this[property].href) {
+      throw new Error(`${this.constructor.modelName} ${getHumanModelName()} must have an "href" property; perhaps you forgot to populate`);
+    }
+
+    return this[property].href;
+  }
+
+  function getRelatedId() {
+    if (!this[property] || !this[property].apiId) {
+      throw new Error(`${this.constructor.modelName} ${getHumanModelName()} must have an "apiId" property; perhaps you forgot to populate`);
+    }
+
+    return this[property].apiId;
+  }
+
+  async function loadRelatedHref() {
+    if (this[property] || !this[hiddenIdProperty]) {
+      return;
+    }
+
+    const related = await mongoose.model(ref).findOne({ apiId: this[hiddenIdProperty] });
+    this[property] = related ? related.id : null;
+  }
+
+  function setRelatedHref(href) {
+
+    const modelName = mongoose.model(ref).modelName;
+    const apiResource = mongoose.model(ref).apiResource;
+    if (!apiResource) {
+      throw new Error(`${this.constructor.name} related model ${modelName} must have an "apiResource" property`);
+    }
+
+    this[hiddenIdProperty] = typeof href === 'string' && href.indexOf(`${apiResource}/`) === 0 ? href.slice(apiResource.length + 1) : null;
+  }
+
+  function setRelatedId(id) {
+    this[hiddenIdProperty] = id;
+  }
+
+  async function validateRelatedHref(value) {
+    if (!value && !this[hiddenIdProperty]) {
+      this.invalidate(virtualHrefProperty, `Path \`${virtualHrefProperty}\` is required`, null, 'required');
+      return true;
+    }
+
+    const relatedModel = mongoose.model(modelName);
+    const relatedId = value instanceof mongoose.Types.ObjectId ? value : (value.id || value);
+
+    const related = mongoose.Types.ObjectId.isValid(relatedId) ? await relatedModel.findById(relatedId) : undefined;
+    if (!related) {
+      this.invalidate(virtualHrefProperty, `Path \`${virtualHrefProperty}\` does not correspond to a known ${getHumanModelName()}`, null, 'invalid reference');
+    }
+
+    return true;
+  }
 };
 
 exports.timestampsPlugin = function(schema) {
