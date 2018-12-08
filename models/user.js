@@ -1,11 +1,21 @@
 const bcrypt = require('bcrypt');
 const { pick } = require('lodash');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const uuid = require('uuid/v4');
 
 const config = require('../config');
 
+const Schema = mongoose.Schema;
+
 const userSchema = new Schema({
+  apiId: {
+    type: String,
+    required: true,
+    unique: true,
+    match: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    minlength: 36,
+    maxlength: 36
+  },
   name: {
     type: String,
     required: true,
@@ -39,25 +49,55 @@ const userSchema = new Schema({
   }
 });
 
-userSchema.set('toJSON', {
-  transform: transformJson,
-  virtuals: true
+userSchema.virtual('href').get(function() {
+  return `/api/users/${this.apiId}`;
 });
 
 userSchema.methods.setPassword = async function(password) {
-  this._password = password;
-  this.passwordHash = await bcrypt.hash(password, config.bcryptCost);
+  if (password) {
+    this._password = password;
+    this.passwordHash = await bcrypt.hash(password, config.bcryptCost);
+  } else {
+    delete this._password;
+    delete this.passwordHash;
+  }
 };
 
 userSchema.statics.parse = function(body) {
   return pick(body, 'name');
 };
 
+userSchema.set('toJSON', {
+  transform: transformJson,
+  virtuals: true
+});
+
+userSchema.pre('validate', function(next) {
+  Promise.resolve().then(generateUniqueApiId.bind(this)).then(() => next(), next);
+});
+
+async function generateUniqueApiId() {
+
+  let attempts = 0;
+  do {
+
+    const apiId = uuid();
+    const existingUser = await this.constructor.findOne({ apiId });
+    if (!existingUser) {
+      return this.apiId = apiId;
+    }
+
+    attempts++;
+  } while (attempts < 10);
+
+  throw new Error(`Could not find a unique API ID after ${attempts} attempts`)
+}
+
 function transformJson(doc, json, options) {
-  json.id = json._id;
-  json.href = `/api/users/${json._id}`;
+  json.id = json.apiId;
   delete json._id;
   delete json.__v;
+  delete json.apiId;
   delete json.passwordHash;
 }
 

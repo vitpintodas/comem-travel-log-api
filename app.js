@@ -6,9 +6,9 @@ const path = require('path');
 const config = require('./config');
 const { createError, HttpError } = require('./utils/errors');
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const apiRouter = require('./api');
 
+mongoose.set('debug', true);
 mongoose.set('useCreateIndex', true);
 mongoose.connect(config.db, { useNewUrlParser: true });
 
@@ -17,8 +17,8 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 
-app.use('/', indexRouter);
-app.use('/api/users', usersRouter);
+app.get('/', (req, res) => res.redirect('/api'));
+app.use('/api', apiRouter);
 
 app.use((req, res, next) => next(createError(404, 'No resource found matching the request URI.')));
 
