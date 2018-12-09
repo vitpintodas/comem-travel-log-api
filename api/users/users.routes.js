@@ -99,13 +99,16 @@ router.post('/',
  *
  * @apiParam (URL Query Parameters) {String} [name] Select users with the specified name(s).
  * @apiParam (URL Query Parameters) {String} [search] Select users with a name or description containing the specified search term(s).
+ * @apiParam (URL Query Parameters) {String="name","tripsCount","createdAt","updatedAt","id","href"} [sort="-createdAt"] Specify how the listed users will be sorted. Prefix a parameter with a minus sign (`-`) to sort in descending order. This parameter can be used multiple times to sort by multiple criteria.
  *
  * @apiParamExample {query} name
- *     &name=jdoe
+ *     ?name=jdoe
  * @apiParamExample {query} search
- *     &search=jd&search=js
+ *     ?search=jd&search=js
+ * @apiParamExample {query} sort
+ *     ?sort=-tripsCount&sort=name&sort=-updatedAt
  * @apiParamExample {query} href
- *     &href=/api/users/d68cf4e9-1349-4d45-b356-c1294e49ef23
+ *     ?href=/api/users/d68cf4e9-1349-4d45-b356-c1294e49ef23
  *
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK

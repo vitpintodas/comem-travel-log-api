@@ -142,7 +142,7 @@ async function createTripFilters(req) {
 
 const sortTripsPipeline = sortPipelineFactory({
   allowed: [
-    'createdAt', 'title', 'tripsCount', 'updatedAt',
+    'createdAt', 'title', 'placesCount', 'updatedAt',
     {
       href: 'apiId',
       id: 'apiId',

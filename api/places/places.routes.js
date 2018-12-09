@@ -115,17 +115,20 @@ router.post('/',
  * @apiParam (URL Query Parameters) {String} [search] Select places with a name or description containing the specified search term(s).
  * @apiParam (URL Query Parameters) {String} [bbox] Select places within a rectangular geographical area. This must be a comma-delimited string of 4 numbers: the longitude and latitude of the bounding box's south-west corner, followed by the longitude and latitude of the bounding box's north-east corner.
  * @apiParam (URL Query Parameters) {String} [near] Select places close to a geographical point. This must be a comma-delimited string of 3 or 4 numbers. The first 2 or 3 numbers are the longitude, latitude and optional altitude of the point, and the last number is the max distance from the point in which to search, in meters.
+ * @apiParam (URL Query Parameters) {String="name","createdAt","updatedAt","id","href","trip.title","trip.id","trip.href"} [sort=createdAt] Specify how the listed places will be sorted. Prefix a parameter with a minus sign (`-`) to sort in descending order. This parameter can be used multiple times to sort by multiple criteria.
  *
  * @apiParamExample {query} name
- *     &name=somewhere
+ *     ?name=somewhere
  * @apiParamExample {query} search
- *     &search=somewhere&search=rainbow
+ *     ?search=somewhere&search=rainbow
  * @apiParamExample {query} href
- *     &href=/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb
+ *     ?href=/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb
  * @apiParamExample {query} bbox
- *     &bbox=-34.51,120.59832,48.1340,150.208519
+ *     ?bbox=-34.51,120.59832,48.1340,150.208519
  * @apiParamExample {query} near
- *     &near=40.12,170.290184,1000
+ *     ?near=40.12,170.290184,1000
+ * @apiParamExample {query} sort
+ *     ?sort=trip.name&sort=-createdAt
  *
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
