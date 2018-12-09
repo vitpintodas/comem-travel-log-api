@@ -13,6 +13,7 @@ A sample API to develop a mobile application.
     - [First-time setup](#first-time-setup)
     - [Run the server in development mode with live reload](#run-the-server-in-development-mode-with-live-reload)
     - [Run the server in production mode](#run-the-server-in-production-mode)
+    - [Run the server on Heroku](#run-the-server-on-heroku)
 - [Configuration](#configuration)
 - [Scripts](#scripts)
 
