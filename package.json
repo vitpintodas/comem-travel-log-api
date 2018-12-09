@@ -8,6 +8,7 @@
     "docs:clean": "rimraf docs",
     "docs:serve": "node scripts/serve-docs.js",
     "docs:watch": "onchange \"api/index.js\" \"api/**/*.docs.js\" \"api/**/*.routes.js\" -- npm run docs:build",
+    "postinstall": "npm run docs:build",
     "start": "node ./bin/www",
     "start:dev": "nodemon"
   },
