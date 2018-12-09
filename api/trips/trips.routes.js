@@ -116,6 +116,12 @@ router.post('/',
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
+ *     Link: <https://comem-travel-log-api.herokuapp.com/api/trips?pageSize=50&page=2>; rel="self last",
+ *           <https://comem-travel-log-api.herokuapp.com/api/trips?pageSize=50&page=1>; rel="first prev"
+ *     Pagination-Page: 2
+ *     Pagination-PageSize: 50
+ *     Pagination-Total: 52
+ *     Pagination-Filtered-Total 52
  *
  *     [
  *       {

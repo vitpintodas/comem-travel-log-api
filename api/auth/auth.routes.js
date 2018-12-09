@@ -9,6 +9,7 @@ const router = express.Router();
  * @apiName CreateAuthenticationToken
  * @apiGroup Authentication
  * @apiDescription Provide your username and password and receive an authentication token to access protected API resources (e.g. change your password or update a trip).
+ * You need to be a [registered user](#api-Users-CreateUser) to do this.
  *
  * @apiUse JsonRequestBody
  *

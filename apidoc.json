@@ -7,5 +7,11 @@
   "header": {
     "title": "Getting Started",
     "filename": "API.md"
-  }
+  },
+  "order": [
+    "Authentication",
+    "Users",
+    "Trips",
+    "Places"
+  ]
 }
