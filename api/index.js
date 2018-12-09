@@ -172,12 +172,18 @@ function serializeError(err) {
  * @apiDefine Pagination
  *
  * @apiParam (URL Query Parameters) {Number{1..}} [page=1] Number of the page to display.
- * @apiParam (URL Query Parameters) {Number{1..50}} [pageSize=10] The number of elements to display per page.
+ * @apiParam (URL Query Parameters) {Number{1..50}} [pageSize=10] The number of elements to list per page.
  *
  * @apiParamExample {query} page
  *     &page=2
  * @apiParamExample {query} pageSize
  *     &pageSize=25
+ *
+ * @apiSuccess (Response Headers) {String} Link A [Link header](https://www.w3.org/wiki/LinkHeader) containing URLs to other pages in the collection.
+ * @apiSuccess (Response Headers) {String} Pagination-Page The current page number in the collection.
+ * @apiSuccess (Response Headers) {String} Pagination-Page-Size The number of elements listed per page.
+ * @apiSuccess (Response Headers) {String} Pagination-Total The total number of elements in the collection, regardless of any filters.
+ * @apiSuccess (Response Headers) {String} Pagination-Filtered-Total The total number of elements in the collection that match the applied filters (same as `Pagination-Total` if there are no filters).
  */
 
 /**

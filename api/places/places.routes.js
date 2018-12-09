@@ -15,6 +15,7 @@ const router = express.Router();
  *
  * Create a place in a trip.
  *
+ * @apiUse AuthorizedResource
  * @apiUse JsonRequestBody
  * @apiUse PlaceResponseBody
  *

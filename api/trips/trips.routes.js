@@ -13,6 +13,7 @@ const router = express.Router();
  *
  * Create a trip under your own user account.
  *
+ * @apiUse AuthorizedResource
  * @apiUse JsonRequestBody
  * @apiUse TripResponseBody
  *
