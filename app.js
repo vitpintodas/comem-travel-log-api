@@ -1,20 +1,29 @@
 const express = require('express');
+const { connectLogger } = require('log4js');
 const mongoose = require('mongoose');
-const logger = require('morgan');
 const path = require('path');
 
+const apiRouter = require('./api');
 const config = require('./config');
 const { createError, HttpError } = require('./utils/errors');
 
-const apiRouter = require('./api');
+const dbLogger = config.logger('db');
+if (dbLogger.isLevelEnabled('debug')) {
+  mongoose.set('debug', (collection, method, ...args) => dbLogger.debug(`${collection}.${method}(${args.map(arg => JSON.stringify(arg)).join(', ')})`));
+}
 
-mongoose.set('debug', true);
+const expressLogger = config.logger('express');
+
+// Remove deprecation warnings
 mongoose.set('useCreateIndex', true);
-mongoose.connect(config.db, { useNewUrlParser: true });
+mongoose.set('useFindAndModify', false);
+mongoose.set('useNewUrlParser', true);
+
+mongoose.connect(config.db);
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(connectLogger(expressLogger, { level: 'trace' }));
 app.use(express.json());
 
 app.get('/', (req, res) => res.redirect('/api'));
