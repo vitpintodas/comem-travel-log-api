@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
+const { readdirSync } = require('fs');
 
 const config = require('./config');
 const dbLogger = config.logger('db');
+
+// Make sure all models are registered
+const modelsDir = config.join('models');
+const modelFiles = readdirSync(modelsDir);
+for (const modelFile of modelFiles) {
+  require(config.join('models', modelFile));
+}
 
 // Log database queries in debug mode
 if (dbLogger.isLevelEnabled('debug')) {

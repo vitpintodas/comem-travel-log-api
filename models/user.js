@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const uniqueValidatorPlugin = require('mongoose-unique-validator');
 
 const config = require('../config');
-const { apiIdPlugin, hrefPlugin, parsePlugin, timestampsPlugin } = require('../utils/models');
+const { apiIdPlugin, hrefPlugin, parsePlugin, timestampsPlugin, transientPropertyPluginFactory } = require('../utils/models');
 
 const Schema = mongoose.Schema;
 const userLogger = config.logger('user');
@@ -32,6 +32,7 @@ userSchema.plugin(apiIdPlugin);
 userSchema.plugin(hrefPlugin);
 userSchema.plugin(parsePlugin);
 userSchema.plugin(timestampsPlugin);
+userSchema.plugin(transientPropertyPluginFactory('tripsCount'))
 userSchema.plugin(uniqueValidatorPlugin);
 
 userSchema.methods.setPassword = async function(password) {
@@ -47,7 +48,7 @@ userSchema.methods.setPassword = async function(password) {
 userSchema.methods.toJSON = function() {
   return {
     id: this.apiId,
-    ...pick(this, 'href', 'name', 'createdAt', 'updatedAt')
+    ...pick(this, 'href', 'name', 'tripsCount', 'createdAt', 'updatedAt')
   };
 };
 

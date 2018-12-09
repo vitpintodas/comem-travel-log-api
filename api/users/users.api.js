@@ -1,7 +1,13 @@
+const { escapeRegExp, isArray } = require('lodash');
+
 const config = require('../../config');
 const User = require('../../models/user');
+const { countRelatedPipelineFactory, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
+const { aggregateToDocuments } = require('../../utils/models');
+
+const USERS_PIPELINE = countRelatedPipelineFactory(User, 'Trip');
 
 const usersLogger = config.logger('api:users');
 
@@ -21,7 +27,9 @@ exports.createUser = route(async (req, res) => {
 
 exports.retrieveAllUsers = route(async (req, res) => {
 
-  const users = await User.find().sort('name');
+  const paginatedPipeline = await paginate(req, res, User, USERS_PIPELINE, createUserFilters);
+  const sortedPipeline = await sortUsersPipeline(req, paginatedPipeline);
+  const users = await aggregateToDocuments(User, sortedPipeline);
 
   res.send(users);
 });
@@ -73,6 +81,67 @@ exports.loadUserById = route(async (req, res, next) => {
 
   req.user = user;
   next();
+});
+
+async function createUserFilters(req) {
+
+  const filters = [];
+
+  // "href" query param filter to select users by href (exact match)
+  if (req.query.href) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.href).map(value => ({
+          apiId: value.replace(new RegExp(`^${escapeRegExp(`${User.apiResource}/`)}`), '')
+        }))
+      }
+    });
+  }
+
+  // "id" query param filter to select users by API ID (exact match)
+  if (req.query.id) {
+    filters.push({
+      $match: {
+        apiId: { $in: toArray(req.query.id) }
+      }
+    });
+  }
+
+  // "name" query param filter to select users by name (exact match)
+  if (req.query.name) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.name).map(value => ({
+          name: new RegExp(`^${escapeRegExp(value)}$`, 'i')
+        }))
+      }
+    });
+  }
+
+  // "search" query param filter to select users with a name that contains the search term (case-insensitive)
+  if (req.query.search) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.search).map(value => ({
+          name: new RegExp(escapeRegExp(value), 'i')
+        }))
+      }
+    });
+  }
+
+  return filters;
+}
+
+const sortUsersPipeline = sortPipelineFactory({
+  allowed: [
+    'createdAt', 'name', 'tripsCount', 'updatedAt',
+    {
+      href: 'apiId',
+      id: 'apiId'
+    }
+  ],
+  default: 'name',
+  required: '-createdAt'
 });
 
 function userNotFound(id) {

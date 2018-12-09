@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const { defaults, includes, isInteger } = require('lodash');
 const { getLogger } = require('log4js');
-const { join: joinPath, resolve: resolvePath } = require('path');
+const { join: joinPath } = require('path');
 const joinUrl = require('url-join');
 
 const pkg = require('./package');
@@ -9,7 +9,7 @@ const pkg = require('./package');
 dotenv.config();
 
 const logLevels = [ 'trace', 'debug', 'info' ,'warn', 'error', 'fatal' ];
-const root = resolvePath(joinPath(__dirname, '..'));
+const root = __dirname;
 
 const configFromEnvironment = {
   baseUrl: process.env.BASE_URL,

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const uniqueValidatorPlugin = require('mongoose-unique-validator');
 
 const config = require('../config');
-const { apiIdPlugin, hrefPlugin, parsePlugin, relatedHrefPluginFactory, timestampsPlugin } = require('../utils/models');
+const { apiIdPlugin, hrefPlugin, parsePlugin, relatedHrefPluginFactory, timestampsPlugin, transientPropertyPluginFactory } = require('../utils/models');
 
 const Schema = mongoose.Schema;
 const tripLogger = config.logger('trip');
@@ -29,12 +29,13 @@ tripSchema.plugin(hrefPlugin);
 tripSchema.plugin(parsePlugin);
 tripSchema.plugin(relatedHrefPluginFactory('User', { logger: tripLogger }));
 tripSchema.plugin(timestampsPlugin);
+tripSchema.plugin(transientPropertyPluginFactory('placesCount'));
 tripSchema.plugin(uniqueValidatorPlugin);
 
 tripSchema.methods.toJSON = function() {
   return {
     id: this.apiId,
-    ...pick(this, 'href', 'title', 'description', 'userId', 'userHref', 'createdAt', 'updatedAt')
+    ...pick(this, 'href', 'title', 'description', 'placesCount', 'userId', 'userHref', 'createdAt', 'updatedAt')
   };
 };
 

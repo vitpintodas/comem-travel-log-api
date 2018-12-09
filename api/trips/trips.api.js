@@ -1,7 +1,14 @@
 const config = require('../../config');
 const Trip = require('../../models/trip');
+const { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
+const { aggregateToDocuments } = require('../../utils/models');
+
+const TRIPS_PIPELINE = [
+  ...countRelatedPipelineFactory(Trip, 'Place'),
+  ...addRelatedPropertyPipelineFactory(Trip, 'User', [ 'apiId', 'name' ])
+];
 
 const tripsLogger = config.logger('api:trips');
 
@@ -23,7 +30,11 @@ exports.createTrip = route(async (req, res) => {
 
 exports.retrieveAllTrips = route(async (req, res) => {
 
-  const trips = await Trip.find().sort('title').populate('user');
+  const paginatedPipeline = await paginate(req, res, Trip, TRIPS_PIPELINE, createTripFilters);
+  const sortedPipeline = await sortTripsPipeline(req, paginatedPipeline);
+  const trips = await aggregateToDocuments(Trip, sortedPipeline);
+
+  await Trip.populate(trips, 'user');
 
   res.send(trips);
 });
@@ -72,6 +83,76 @@ exports.loadTripById = route(async (req, res, next) => {
 
   req.trip = trip;
   next();
+});
+
+async function createTripFilters(req) {
+
+  const filters = [];
+
+  // "href" query param filter to select trips by href (exact match)
+  if (req.query.href) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.href).map(value => ({
+          apiId: value.replace(new RegExp(`^${escapeRegExp(`${Trip.apiResource}/`)}`), '')
+        }))
+      }
+    });
+  }
+
+  // "id" query param filter to select trips by API ID (exact match)
+  if (req.query.id) {
+    filters.push({
+      $match: {
+        apiId: { $in: toArray(req.query.id) }
+      }
+    });
+  }
+
+  // "title" query param filter to select trips by title (exact match)
+  if (req.query.title) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.title).map(value => ({
+          title: new RegExp(`^${escapeRegExp(value)}$`, 'i')
+        }))
+      }
+    });
+  }
+
+  // "search" query param filter to select trips with a title or description that contains the search term (case-insensitive)
+  if (req.query.search) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.search).reduce((memo, value) => [
+          ...memo,
+          {
+            title: new RegExp(escapeRegExp(value), 'i')
+          },
+          {
+            description: new RegExp(escapeRegExp(value), 'i')
+          }
+        ], [])
+      }
+    });
+  }
+
+  return filters;
+}
+
+const sortTripsPipeline = sortPipelineFactory({
+  allowed: [
+    'createdAt', 'title', 'tripsCount', 'updatedAt',
+    {
+      href: 'apiId',
+      id: 'apiId',
+      'user.href': 'userProperties.apiId',
+      'user.id': 'userProperties.apiId',
+      'user.name': 'userProperties.name'
+    }
+  ],
+  default: '-createdAt',
+  required: '-createdAt'
 });
 
 function tripNotFound(id) {

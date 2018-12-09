@@ -4,6 +4,11 @@ const mongoose = require('mongoose');
 const joinUrl = require('url-join');
 const uuid = require('uuid/v4');
 
+exports.aggregateToDocuments = async function(model, pipeline) {
+  const result = await model.aggregate(pipeline)
+  return result.map(data => new model(data));
+};
+
 exports.apiIdPlugin = function(schema) {
 
   schema.add({
@@ -185,6 +190,23 @@ exports.timestampsPlugin = function(schema) {
     next();
   });
 }
+
+exports.transientPropertyPluginFactory = function(property, options) {
+  return schema => {
+
+    const hiddenProperty = get(options, 'hiddenProperty', `_${property}`);
+
+    schema.virtual(property).get(getTransientProperty).set(setTransientProperty);
+
+    function getTransientProperty() {
+      return this[hiddenProperty];
+    }
+
+    function setTransientProperty(value) {
+      this[hiddenProperty] = value;
+    }
+  };
+};
 
 async function generateUniqueApiId(model) {
 
