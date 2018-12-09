@@ -1,6 +1,6 @@
 const formatLinkHeader = require('format-link-header');
 const { camelize, pluralize } = require('inflection');
-const { compact, get, isArray, isEmpty, isInteger, isPlainObject, keys, reduce, uniqBy, without } = require('lodash');
+const { compact, get, isArray, isEmpty, isInteger, isObject, isPlainObject, keys, reduce, uniqBy, without } = require('lodash');
 const mongoose = require('mongoose');
 const { stringify: stringifyQuery } = require('qs');
 const { parse: parseUrl } = require('url');
@@ -269,7 +269,7 @@ function prepareDatabaseQuery(query, pageSize) {
 function requireJson(req, res, next) {
   if (!req.is('application/json')) {
     return next(createError(415, 'wrongRequestFormat', `This resource only has an application/json representation, but the content type of the request is ${req.get('Content-Type') || 'not specified'}`));
-  } else if (!_.isObject(req.body)) {
+  } else if (!isObject(req.body)) {
     return next(createError(400, 'invalidRequestBody', 'The request body must be a JSON object'));
   }
 
