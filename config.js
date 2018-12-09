@@ -14,7 +14,7 @@ const root = __dirname;
 const configFromEnvironment = {
   baseUrl: process.env.BASE_URL,
   bcryptCost: parseEnvInt('BCRYPT_COST'),
-  db: process.env.DATABASE_URL || process.env.MONGODB_URL,
+  db: process.env.DATABASE_URI || process.env.DATABASE_URL || process.env.MONGODB_URI || process.env.MONGODB_URL,
   docs: {
     browser: process.env.DOCS_BROWSER,
     open: parseEnvBoolean('DOCS_OPEN'),
