@@ -102,7 +102,7 @@ Environment Variable                                         | Default Value    
 `PORT`                                                       | `3000`                                     | Port (or pipe) to bind the server to.
 `SECRET`                                                     |                                            | Secret used to sign [JWT][jwt] tokens.
 
-> Since [dotenv][dotenv] is used, you can also set these variables using a `.env` file.
+Since [dotenv][dotenv] is used, you can also set these variables using a `.env` file:
 
 ```
 PORT=4000
