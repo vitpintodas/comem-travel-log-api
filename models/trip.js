@@ -33,11 +33,17 @@ tripSchema.plugin(uniqueValidatorPlugin);
 tripSchema.methods.toJSON = function() {
   return {
     id: this.apiId,
-    ...pick(this, 'title', 'description', 'href', 'userId', 'userHref', 'createdAt', 'updatedAt')
+    ...pick(this, 'href', 'title', 'description', 'userId', 'userHref', 'createdAt', 'updatedAt')
   };
 };
 
 tripSchema.statics.apiResource = '/api/trips';
 tripSchema.statics.editableProperties = [ 'title', 'description' ];
+
+// Cascade delete
+tripSchema.pre('remove', async function() {
+  const Place = mongoose.model('Place');
+  await Place.remove({ trip: this.id });
+});
 
 module.exports = mongoose.model('Trip', tripSchema);

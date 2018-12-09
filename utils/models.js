@@ -66,7 +66,9 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
   const modelName = get(options, 'modelName', ref);
   const humanModelName = get(options, 'humanModelName');
   const property = get(options, 'property', camelize(ref, true));
-  const hiddenIdProperty = get(options, 'hiddenIdProperty', `_${property}Id`);
+  const hiddenApiIdProperty = get(options, 'hiddenApiIdProperty', `_${property}Id`);
+  const hiddenDocumentProperty = get(options, 'hiddenDocumentProperty', `_${property}`);
+  const loadRelatedMethod = get(options, 'loadRelatedMethod', `loadRelated${ref}`);
   const virtualHrefProperty = get(options, 'virtualHrefProperty', `${property}Href`);
   const virtualIdProperty = get(options, 'virtualIdProperty', `${property}Id`);
 
@@ -83,6 +85,8 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
 
   schema.virtual(virtualIdProperty).get(getRelatedId).set(setRelatedId);
   schema.virtual(virtualHrefProperty).get(getRelatedHref).set(setRelatedHref);
+
+  schema.methods[loadRelatedMethod] = loadRelatedHref;
 
   schema.pre('validate', loadRelatedHref);
 
@@ -107,11 +111,12 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
   }
 
   async function loadRelatedHref() {
-    if (this[property] || !this[hiddenIdProperty]) {
+    if (this[property] || !this[hiddenApiIdProperty]) {
       return;
     }
 
-    const related = await mongoose.model(ref).findOne({ apiId: this[hiddenIdProperty] });
+    const related = await mongoose.model(ref).findOne({ apiId: this[hiddenApiIdProperty] });
+    this[hiddenDocumentProperty] = related;
     this[property] = related ? related.id : null;
   }
 
@@ -123,16 +128,16 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
       throw new Error(`${this.constructor.name} related model ${modelName} must have an "apiResource" property`);
     }
 
-    this[hiddenIdProperty] = typeof href === 'string' && href.indexOf(`${apiResource}/`) === 0 ? href.slice(apiResource.length + 1) : null;
+    this[hiddenApiIdProperty] = typeof href === 'string' && href.indexOf(`${apiResource}/`) === 0 ? href.slice(apiResource.length + 1) : href;
   }
 
   function setRelatedId(id) {
-    this[hiddenIdProperty] = id;
+    this[hiddenApiIdProperty] = id;
   }
 
   async function validateRelatedHref(value) {
-    if (!value && !this[hiddenIdProperty]) {
-      this.invalidate(virtualHrefProperty, `Path \`${virtualHrefProperty}\` is required`, null, 'required');
+    if (!value && !this[hiddenApiIdProperty]) {
+      this.invalidate(virtualHrefProperty, `Path \`${virtualHrefProperty}\` or \`${virtualIdProperty}\` is required`, null, 'required');
       return true;
     }
 
@@ -141,7 +146,7 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
 
     const related = mongoose.Types.ObjectId.isValid(relatedId) ? await relatedModel.findById(relatedId) : undefined;
     if (!related) {
-      this.invalidate(virtualHrefProperty, `Path \`${virtualHrefProperty}\` does not correspond to a known ${getHumanModelName()}`, null, 'invalid reference');
+      this.invalidate(virtualHrefProperty, `Path \`${virtualHrefProperty}\` or \`${virtualIdProperty}\` does not correspond to a known ${getHumanModelName()}`, null, 'invalid reference');
     }
 
     return true;

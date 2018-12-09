@@ -5,7 +5,7 @@ const User = require('../models/user');
 const { route } = require('./express');
 const { createError } = require('./errors');
 
-exports.authenticate = route(async (req, res, next) => {
+const authenticate = route(async (req, res, next) => {
 
   const authorizationHeader = req.get('Authorization');
   if (!authorizationHeader) {
@@ -26,33 +26,39 @@ exports.authenticate = route(async (req, res, next) => {
     if (err.message === 'jwt expired') {
       throw createError(401, 'authTokenExpired', 'Authentication token has expired');
     } else {
-      throw authTokenInvalid();
+      throw authTokenInvalidError();
     }
   }
 
   const user = await User.findOne({ apiId: claims.sub });
   if (!user) {
-    throw authTokenInvalid();
+    throw authTokenInvalidError();
   }
 
   req.currentUser = user;
   next();
 });
 
-exports.authorize = func => route(async (req, res, next) => {
+const authorize = func => route(async (req, res, next) => {
 
   const authorized = await func(req);
   if (!authorized) {
-    throw createError(403, 'forbidden', 'You are not authorized to perform this action; authenticate with a user account that has more privileges');
+    throw forbiddenError();
   }
 
   next();
 });
 
-function authTokenInvalid() {
+function forbiddenError() {
+  return createError(403, 'forbidden', 'You are not authorized to perform this action; authenticate with a user account that has more privileges');
+}
+
+function authTokenInvalidError() {
   return createError(401, 'authTokenInvalid', 'Authentication token is invalid');
 }
 
 function verifyJwt(token) {
   return new Promise((resolve, reject) => jwt.verify(token, config.secret, (err, claims) => err ? reject(err) : resolve(claims)));
 }
+
+module.exports = { authenticate, authorize, forbiddenError };
