@@ -6,6 +6,7 @@ const config = require('../config');
 const { apiIdPlugin, hrefPlugin, parsePlugin, relatedHrefPluginFactory, timestampsPlugin } = require('../utils/models');
 
 const Schema = mongoose.Schema;
+const tripLogger = config.logger('trip');
 
 const tripSchema = new Schema({
   title: {
@@ -26,7 +27,7 @@ const tripSchema = new Schema({
 tripSchema.plugin(apiIdPlugin);
 tripSchema.plugin(hrefPlugin);
 tripSchema.plugin(parsePlugin);
-tripSchema.plugin(relatedHrefPluginFactory('User'));
+tripSchema.plugin(relatedHrefPluginFactory('User', { logger: tripLogger }));
 tripSchema.plugin(timestampsPlugin);
 tripSchema.plugin(uniqueValidatorPlugin);
 
@@ -43,6 +44,7 @@ tripSchema.statics.editableProperties = [ 'title', 'description' ];
 // Cascade delete
 tripSchema.pre('remove', async function() {
   const Place = mongoose.model('Place');
+  tripLogger.debug(`Deleting all places related to trip ${this.apiId}`);
   await Place.remove({ trip: this.id });
 });
 

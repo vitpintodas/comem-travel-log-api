@@ -6,6 +6,8 @@ const User = require('../../models/user');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 
+const authLogger = config.logger('api:auth');
+
 exports.createAuthenticationToken = route(async (req, res) => {
 
   const missing = [];
@@ -42,6 +44,8 @@ exports.createAuthenticationToken = route(async (req, res) => {
   });
 
   res.send({ token, user });
+
+  authLogger.info(`Authenticated user ${user.apiId} named "${user.name}"`);
 });
 
 function signJwt(payload) {

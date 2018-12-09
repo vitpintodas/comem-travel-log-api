@@ -11,6 +11,8 @@ const POPULATE = {
   }
 };
 
+const placesLogger = config.logger('api:places');
+
 exports.createPlace = route(async (req, res) => {
 
   const place = new Place().parseFrom(req.body);
@@ -23,6 +25,8 @@ exports.createPlace = route(async (req, res) => {
     .status(201)
     .set('Location', config.joinUrl(place.href))
     .send(place);
+
+  placesLogger.info(`Created place ${place.apiId} named "${place.name}" in trip ${place.trip.apiId}`);
 });
 
 exports.retrieveAllPlaces = route(async (req, res) => {
@@ -46,11 +50,18 @@ exports.updatePlace = route(async (req, res) => {
   await place.save();
 
   res.send(place);
+
+  placesLogger.info(`Updated place ${place.apiId} named "${place.name}"`);
 });
 
 exports.removePlace = route(async (req, res) => {
-  await req.place.remove();
+
+  const place = req.place;
+  await place.remove();
+
   res.sendStatus(204);
+
+  placesLogger.info(`Removed place ${place.apiId} named "${place.name}"`);
 });
 
 exports.canModify = function(req) {

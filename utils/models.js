@@ -1,5 +1,5 @@
 const { camelize, humanize } = require('inflection');
-const { get, isArray, pick } = require('lodash');
+const { get, isArray, noop, pick } = require('lodash');
 const mongoose = require('mongoose');
 const joinUrl = require('url-join');
 const uuid = require('uuid/v4');
@@ -63,6 +63,9 @@ exports.parsePlugin = function(schema) {
 
 exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
 
+  const logger = get(options, 'logger', { trace: noop });
+  const trace = logger.trace.bind(logger);
+
   const modelName = get(options, 'modelName', ref);
   const humanModelName = get(options, 'humanModelName');
   const property = get(options, 'property', camelize(ref, true));
@@ -115,6 +118,7 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
       return;
     }
 
+    trace(`Loading related ${ref} ${this[hiddenApiIdProperty]} for ${this.constructor.modelName} ${this.apiId || '[new]'}`);
     const related = await mongoose.model(ref).findOne({ apiId: this[hiddenApiIdProperty] });
     this[hiddenDocumentProperty] = related;
     this[property] = related ? related.id : null;
@@ -128,10 +132,13 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
       throw new Error(`${this.constructor.name} related model ${modelName} must have an "apiResource" property`);
     }
 
-    this[hiddenApiIdProperty] = typeof href === 'string' && href.indexOf(`${apiResource}/`) === 0 ? href.slice(apiResource.length + 1) : href;
+    const value = typeof href === 'string' && href.indexOf(`${apiResource}/`) === 0 ? href.slice(apiResource.length + 1) : href;
+    trace(`Setting ${this.constructor.modelName}.${hiddenApiIdProperty} to ${value} through ${virtualHrefProperty} property`);
+    this[hiddenApiIdProperty] = value;
   }
 
   function setRelatedId(id) {
+    trace(`Setting ${this.constructor.modelName}.${hiddenApiIdProperty} to ${id} through ${virtualIdProperty} property`);
     this[hiddenApiIdProperty] = id;
   }
 
@@ -142,7 +149,7 @@ exports.relatedHrefPluginFactory = (ref, options) => function(schema) {
     }
 
     const relatedModel = mongoose.model(modelName);
-    const relatedId = value instanceof mongoose.Types.ObjectId ? value : (value.id || value);
+    const relatedId = valueToObjectId(value);
 
     const related = mongoose.Types.ObjectId.isValid(relatedId) ? await relatedModel.findById(relatedId) : undefined;
     if (!related) {
@@ -194,4 +201,14 @@ async function generateUniqueApiId(model) {
   } while (attempts < 10);
 
   throw new Error(`Could not find a unique API ID after ${attempts} attempts`)
+}
+
+function valueToObjectId(value) {
+  if (value instanceof mongoose.Types.ObjectId) {
+    return value;
+  } else if (value && value.id) {
+    return value.id;
+  } else {
+    return value;
+  }
 }

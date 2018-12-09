@@ -3,6 +3,8 @@ const Trip = require('../../models/trip');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 
+const tripsLogger = config.logger('api:trips');
+
 exports.createTrip = route(async (req, res) => {
 
   const trip = new Trip().parseFrom(req.body);
@@ -15,6 +17,8 @@ exports.createTrip = route(async (req, res) => {
     .status(201)
     .set('Location', config.joinUrl(trip.href))
     .send(trip);
+
+  tripsLogger.info(`Created trip ${trip.apiId} titled "${trip.title}" for user ${trip.user.apiId}`);
 });
 
 exports.retrieveAllTrips = route(async (req, res) => {
@@ -36,11 +40,18 @@ exports.updateTrip = route(async (req, res) => {
   await trip.save();
 
   res.send(trip);
+
+  tripsLogger.info(`Updated trip ${trip.apiId} titled "${trip.title}"`);
 });
 
 exports.removeTrip = route(async (req, res) => {
-  await req.trip.remove();
+
+  const trip = req.trip;
+  await trip.remove();
+
   res.sendStatus(204);
+
+  tripsLogger.info(`Removed trip ${trip.apiId} titled "${trip.title}"`);
 });
 
 exports.canModify = function(req) {

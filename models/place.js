@@ -6,6 +6,7 @@ const config = require('../config');
 const { apiIdPlugin, hrefPlugin, parsePlugin, relatedHrefPluginFactory, timestampsPlugin } = require('../utils/models');
 
 const Schema = mongoose.Schema;
+const placeLogger = config.logger('place');
 
 const placeSchema = new Schema({
   name: {
@@ -52,7 +53,7 @@ placeSchema.index({ location: '2dsphere' });
 placeSchema.plugin(apiIdPlugin);
 placeSchema.plugin(hrefPlugin);
 placeSchema.plugin(parsePlugin);
-placeSchema.plugin(relatedHrefPluginFactory('Trip'));
+placeSchema.plugin(relatedHrefPluginFactory('Trip', { logger: placeLogger }));
 placeSchema.plugin(timestampsPlugin);
 placeSchema.plugin(uniqueValidatorPlugin);
 

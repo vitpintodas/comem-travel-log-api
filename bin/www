@@ -5,42 +5,26 @@ const app = require('../app');
 const config = require('../config');
 
 const appLogger = config.logger('app');
-
-/**
- * Get port from environment and store in Express.
- */
-const port = normalizePort(config.port);
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
+const port = config.port;
 const server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+// Entrypoint
+Promise
+  .resolve()
+  .then(app.start)
+  .then(startServer);
 
 /**
- * Normalize a port into a number, string, or false.
+ * Starts the server.
  */
-function normalizePort(val) {
-  const port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    return val; // named pipe
-  } else if (port >= 0) {
-    return port; // port number
-  }
-
-  return false;
+function startServer() {
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener called if the server fails to start.
  */
 function onError(error) {
   if (error.syscall !== 'listen') {
@@ -52,11 +36,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
+      appLogger.fatal(`${bind} requires elevated privileges`);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
+      appLogger.fatal(`${bind} is already in use`);
       process.exit(1);
       break;
     default:
@@ -65,10 +49,10 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener called if the server starts successfully.
  */
 function onListening() {
   const addr = server.address();
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
   appLogger.info(`Listening on ${bind}`);
 }

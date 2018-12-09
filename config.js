@@ -16,7 +16,7 @@ const configFromEnvironment = {
   bcryptCost: parseEnvInt('BCRYPT_COST'),
   db: process.env.DATABASE_URL || process.env.MONGODB_URL,
   logLevel: process.env.LOG_LEVEL,
-  port: process.env.PORT,
+  port: parseEnvInt('PORT', false),
   secret: process.env.SECRET
 };
 
@@ -50,6 +50,10 @@ if (!isInteger(config.bcryptCost)) {
   throw new Error(`Configuration property "logLevel" must be a string, but its type is ${typeof config.logLevel}`);
 } else if (!includes(logLevels, config.logLevel.toLowerCase())) {
   throw new Error(`Configuration property "logLevel" must be one of ${logLevels.join(', ')} (case-insensitive), but its value is "${config.logLevel}"`);
+} else if (typeof config.port !== 'string' && typeof config.port !== 'number') {
+  throw new Error(`Configuration property "port" must be a port number or a named pipe (string), but its type is ${typeof config.port}`);
+} else if (typeof config.port === 'number' && (!isInteger(config.port) || config.port < 0 || config.port > 65535)) {
+  throw new Error(`Configuration property "port" must be a port number between 1 and 65535, but its value is ${config.port}`);
 } else if (config.secret !== undefined && typeof config.secret !== 'string') {
   throw new Error(`Configuration property "secret" must be a string, but its type is ${typeof config.secret}`);
 } else if (!config.secret) {
@@ -64,7 +68,7 @@ function createLogger(name) {
   return logger;
 }
 
-function parseEnvInt(name) {
+function parseEnvInt(name, strict = true) {
 
   const value = process.env[name];
   if (value === undefined) {
@@ -72,7 +76,7 @@ function parseEnvInt(name) {
   }
 
   const parsed = parseInt(value, 10);
-  if (!isInteger(parsed)) {
+  if (!isInteger(parsed) && strict) {
     throw new Error(`Environment variable ${name} must be an integer`);
   }
 

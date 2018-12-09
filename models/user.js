@@ -7,6 +7,7 @@ const config = require('../config');
 const { apiIdPlugin, hrefPlugin, parsePlugin, timestampsPlugin } = require('../utils/models');
 
 const Schema = mongoose.Schema;
+const userLogger = config.logger('user');
 
 const userSchema = new Schema({
   name: {
@@ -62,9 +63,11 @@ userSchema.pre('remove', async function() {
 
   // Remove all related places
   const Place = mongoose.model('Place');
+  userLogger.debug(`Deleting all places related to user ${this.apiId}`);
   await Place.remove({ trip: { $in: trips.map(trip => trip.id) } });
 
   // Remove all related trips
+  userLogger.debug(`Deleting all trips related to user ${this.apiId}`);
   await Trip.remove({ user: this.id });
 });
 
