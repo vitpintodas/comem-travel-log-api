@@ -5,10 +5,10 @@ const config = require('./config');
 const dbLogger = config.logger('db');
 
 // Make sure all models are registered
-const modelsDir = config.join('models');
+const modelsDir = config.path('models');
 const modelFiles = readdirSync(modelsDir);
 for (const modelFile of modelFiles) {
-  require(config.join('models', modelFile));
+  require(config.path('models', modelFile));
 }
 
 // Log database queries in debug mode

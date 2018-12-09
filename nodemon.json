@@ -11,6 +11,7 @@
     "app.js",
     "bin/www",
     "config.js",
+    "db.js",
     "models/**/*.js",
     "utils/**/*.js"
   ]

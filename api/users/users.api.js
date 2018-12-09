@@ -42,6 +42,8 @@ exports.updateUser = route(async (req, res) => {
 
   const user = req.user;
   user.parseFrom(req.body);
+
+  // TODO: require previous password
   if (req.body.password) {
     await user.setPassword(req.body.password);
   }

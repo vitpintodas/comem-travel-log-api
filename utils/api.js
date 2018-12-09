@@ -257,13 +257,23 @@ function groupModelProperties(model) {
 }
 
 function invalidQueryParamError(queryParam, message) {
-  return createError(400, 'queryParamInvalid', message, {
+  return createError(400, 'invalidQueryParam', message, {
     properties: { queryParam }
   });
 }
 
 function prepareDatabaseQuery(query, pageSize) {
   return pageSize === 0 ? query.where({ _id: null }) : query;
+}
+
+function requireJson(req, res, next) {
+  if (!req.is('application/json')) {
+    return next(createError(415, 'wrongRequestFormat', `This resource only has an application/json representation, but the content type of the request is ${req.get('Content-Type') || 'not specified'}`));
+  } else if (!_.isObject(req.body)) {
+    return next(createError(400, 'invalidRequestBody', 'The request body must be a JSON object'));
+  }
+
+  next();
 }
 
 function toArray(value) {
@@ -274,4 +284,4 @@ function toArray(value) {
   return isArray(value) ? value : [ value ];
 }
 
-module.exports = { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, ensureSingleQueryParam, invalidQueryParamError, paginate, sortPipelineFactory, toArray };
+module.exports = { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, ensureSingleQueryParam, invalidQueryParamError, paginate, requireJson, sortPipelineFactory, toArray };

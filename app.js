@@ -16,11 +16,14 @@ app.use(connectLogger(expressLogger, { level: 'trace' }));
 // Parse the body of JSON requests
 app.use(express.json());
 
-// Redirect root requests to the API
-app.get('/', (req, res) => res.redirect('/api'));
-
 // Plug in the API
 app.use('/api', apiRouter);
+
+// Display the documentation if available
+app.use(express.static('docs'));
+
+// Redirect root requests to the API
+app.use('/', (req, res) => res.redirect('/api'));
 
 /**
  * Starts the application by connecting to the database.

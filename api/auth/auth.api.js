@@ -35,7 +35,7 @@ exports.createAuthenticationToken = route(async (req, res) => {
 
   const passwordIsValid = await bcrypt.compare(password, user.passwordHash);
   if (!passwordIsValid) {
-    throw createError(401, 'authCredentialsInvalid', 'Password is invalid');
+    throw createError(401, 'authCredentialsInvalid', 'Password is incorrect');
   }
 
   const token = await signJwt({

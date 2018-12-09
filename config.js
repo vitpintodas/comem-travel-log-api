@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const { defaults, includes, isInteger } = require('lodash');
+const { includes, isInteger, merge } = require('lodash');
 const { getLogger } = require('log4js');
 const { join: joinPath } = require('path');
 const joinUrl = require('url-join');
@@ -15,6 +15,11 @@ const configFromEnvironment = {
   baseUrl: process.env.BASE_URL,
   bcryptCost: parseEnvInt('BCRYPT_COST'),
   db: process.env.DATABASE_URL || process.env.MONGODB_URL,
+  docs: {
+    browser: process.env.DOCS_BROWSER,
+    open: parseEnvBoolean('DOCS_OPEN'),
+    port: parseEnvInt('DOCS_PORT')
+  },
   logLevel: process.env.LOG_LEVEL,
   port: parseEnvInt('PORT', false),
   secret: process.env.SECRET
@@ -24,18 +29,21 @@ const defaultConfig = {
   baseUrl: `http://localhost:${configFromEnvironment.port || 3000}`,
   bcryptCost: 10,
   db: 'mongodb://localhost/comem-travel-log-api',
+  docs: {
+    open: true
+  },
   logLevel: 'info',
   port: 3000
 };
 
 const fixedConfig = {
-  join: (...paths) => joinPath(root, ...paths),
   logger: createLogger,
+  path: (...paths) => joinPath(root, ...paths),
   root,
   version: pkg.version
 };
 
-const config = defaults(fixedConfig, configFromEnvironment, defaultConfig);
+const config = merge(defaultConfig, configFromEnvironment, fixedConfig);
 config.joinUrl = (...segments) => joinUrl(config.baseUrl, ...segments);
 
 if (!isInteger(config.bcryptCost)) {
@@ -46,6 +54,10 @@ if (!isInteger(config.bcryptCost)) {
   throw new Error(`Configuration property "db" must be a string, but its type is ${typeof config.db}`);
 } else if (!config.db.match(/^mongodb:\/\/[^\s]+$/)) {
   throw new Error(`Configuration property "db" must be a MongoDB URI starting with "mongodb://", value "${config.db}" is not a valid MongoDB URI`);
+} else if (config.docs.port !== undefined && typeof config.docs.port !== 'number') {
+  throw new Error(`Configuration property "docs.port" must be a port number, but its type is ${typeof config.docs.port}`);
+} else if (config.docs.port !== undefined && (!isInteger(config.docs.port) || config.docs.port < 0 || config.docs.port > 65535)) {
+  throw new Error(`Configuration property "docs.port" must be a port number between 1 and 65535, but its value is ${config.docs.port}`);
 } else if (typeof config.logLevel !== 'string') {
   throw new Error(`Configuration property "logLevel" must be a string, but its type is ${typeof config.logLevel}`);
 } else if (!includes(logLevels, config.logLevel.toLowerCase())) {
@@ -66,6 +78,11 @@ function createLogger(name) {
   logger.level = config.logLevel.toLowerCase();
 
   return logger;
+}
+
+function parseEnvBoolean(name) {
+  const value = process.env[name];
+  return value !== undefined ? Boolean(value.match(/^(?:1|y|yes|t|true)$/i)) : undefined;
 }
 
 function parseEnvInt(name, strict = true) {

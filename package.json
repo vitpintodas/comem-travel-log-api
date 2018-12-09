@@ -3,8 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env DEBUG=comem-travel-log-api:* nodemon",
-    "start": "node ./bin/www"
+    "dev": "npm run docs:clean && npm run docs:build && concurrently \"npm run start:dev\" \"npm run docs:serve\" \"npm run docs:watch\"",
+    "docs:build": "apidoc -i api -o docs",
+    "docs:clean": "rimraf docs",
+    "docs:serve": "node scripts/serve-docs.js",
+    "docs:watch": "onchange \"api/index.js\" \"api/**/*.docs.js\" \"api/**/*.routes.js\" -- npm run docs:build",
+    "start": "node ./bin/www",
+    "start:dev": "nodemon"
   },
   "dependencies": {
     "bcrypt": "^3.0.2",
@@ -23,6 +28,12 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "nodemon": "^1.18.7"
+    "apidoc": "^0.17.7",
+    "concurrently": "^4.1.0",
+    "get-port": "^4.0.0",
+    "live-server": "^1.2.1",
+    "nodemon": "^1.18.7",
+    "onchange": "^5.1.3",
+    "rimraf": "^2.6.2"
   }
 }
