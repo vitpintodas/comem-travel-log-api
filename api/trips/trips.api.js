@@ -5,7 +5,7 @@ const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
 
-const TRIPS_PIPELINE = [
+const PIPELINE = [
   ...countRelatedPipelineFactory(Trip, 'Place'),
   ...addRelatedPropertyPipelineFactory(Trip, 'User', [ 'apiId', 'name' ])
 ];
@@ -30,7 +30,7 @@ exports.createTrip = route(async (req, res) => {
 
 exports.retrieveAllTrips = route(async (req, res) => {
 
-  const paginatedPipeline = await paginate(req, res, Trip, TRIPS_PIPELINE, createTripFilters);
+  const paginatedPipeline = await paginate(req, res, Trip, PIPELINE, createTripFilters);
   const sortedPipeline = await sortTripsPipeline(req, paginatedPipeline);
   const trips = await aggregateToDocuments(Trip, sortedPipeline);
 

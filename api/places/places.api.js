@@ -2,7 +2,7 @@ const { escapeRegExp, isFinite } = require('lodash');
 
 const config = require('../../config');
 const Place = require('../../models/place');
-const { addRelatedPropertyPipelineFactory, ensureSingleQueryParam, invalidQueryParamError, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
+const { addRelatedPropertyPipelineFactory, invalidQueryParamError, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
 const { forbiddenError } = require('../../utils/auth');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
@@ -37,10 +37,8 @@ exports.createPlace = route(async (req, res) => {
 
 exports.retrieveAllPlaces = route(async (req, res) => {
 
-  // IMPORTANT: start with an empty pipeline, because the $geoNear
-  // stage filter must be the first stage in the pipeline if present
-  const paginatedPipeline = await paginate(req, res, Place, [], createPlaceFilters);
-  const sortedPipeline = await sortPlacesPipeline(req, [ ...paginatedPipeline, ...PIPELINE ]);
+  const paginatedPipeline = await paginate(req, res, Place, PIPELINE, createPlaceFilters);
+  const sortedPipeline = await sortPlacesPipeline(req, paginatedPipeline);
   const places = await aggregateToDocuments(Place, sortedPipeline);
 
   await Place.populate(places, POPULATE);
@@ -113,46 +111,6 @@ async function createPlaceFilters(req) {
 
   const filters = [];
 
-  // "near" query param filter to select places close to a point
-  // IMPORTANT: $geoNear must be the first stage in a pipeline
-  ensureSingleQueryParam(req, 'near');
-  if (req.query.near) {
-
-    const near = req.query.near;
-    const parts = near.split(',');
-    if (parts.length < 3 || parts.length > 4) {
-      throw invalidQueryParamError('near', `Query parameter "near" must be a comma-delimited string of 3 or 4 numbers (longitude, latitude, optional altitude and distance), but it has ${parts.length} parts`);
-    }
-
-    const numbers = parts.map(part => parseFloat(part, 10));
-    const notNumbers = numbers.filter(number => !isFinite(number));
-    if (notNumbers.length) {
-      throw invalidQueryParamError('near', `Query parameter "near" must be a comma-delimited string of 3 or 4 numbers (longitude, latitude, optional altitude and distance), but some of its values are not numbers: ${notNumbers.map(value => `"${value}"`).join(', ')}`);
-    }
-
-    if (numbers[0] < -180 || numbers[0] > 180) {
-      throw invalidQueryParamError('near', `Query parameter "near" must have a longitude between -180 and 180 as its first number, but the value is ${numbers[0]}`);
-    } else if (numbers[1] < -90 || numbers[1] > 90) {
-      throw invalidQueryParamError('near', `Query parameter "near" must have a latitude between -90 and 90 as its second number, but the value is ${numbers[1]}`);
-    }
-
-    const maxDistance = numbers.pop();
-    if (maxDistance <= 0) {
-      throw invalidQueryParamError('near', `Query parameter "near" must have a distance greater than zero as its last number, but the value is ${maxDistance}`);
-    }
-
-    filters.push({
-      $geoNear: {
-        distanceField: 'locationDistance',
-        maxDistance,
-        near: {
-          type: 'Point',
-          coordinates: numbers
-        }
-      }
-    })
-  }
-
   // "bbox" query param filter to select places within a rectangular area
   if (req.query.bbox) {
     filters.push({
@@ -199,6 +157,52 @@ async function createPlaceFilters(req) {
                     ]
                   ]
                 }
+              }
+            }
+          };
+        })
+      }
+    });
+  }
+
+  // "near" query param filter to select places near a geographical point
+  if (req.query.near) {
+    filters.push({
+      $match: {
+        $or: toArray(req.query.near).map(bbox => {
+
+          const near = req.query.near;
+          const parts = near.split(',');
+          if (parts.length < 3 || parts.length > 4) {
+            throw invalidQueryParamError('near', `Query parameter "near" must be a comma-delimited string of 3 or 4 numbers (longitude, latitude, optional altitude and distance), but it has ${parts.length} parts`);
+          }
+
+          const numbers = parts.map(part => parseFloat(part, 10));
+          const notNumbers = numbers.filter(number => !isFinite(number));
+          if (notNumbers.length) {
+            throw invalidQueryParamError('near', `Query parameter "near" must be a comma-delimited string of 3 or 4 numbers (longitude, latitude, optional altitude and distance), but some of its values are not numbers: ${notNumbers.map(value => `"${value}"`).join(', ')}`);
+          }
+
+          if (numbers[0] < -180 || numbers[0] > 180) {
+            throw invalidQueryParamError('near', `Query parameter "near" must have a longitude between -180 and 180 as its first number, but the value is ${numbers[0]}`);
+          } else if (numbers[1] < -90 || numbers[1] > 90) {
+            throw invalidQueryParamError('near', `Query parameter "near" must have a latitude between -90 and 90 as its second number, but the value is ${numbers[1]}`);
+          }
+
+          const maxDistance = numbers.pop();
+          if (maxDistance <= 0) {
+            throw invalidQueryParamError('near', `Query parameter "near" must have a distance greater than zero as its last number, but the value is ${maxDistance}`);
+          }
+
+          const geometry = {
+            type: 'Point',
+            coordinates: numbers
+          };
+
+          return {
+            location: {
+              $geoWithin: {
+                $centerSphere: [ numbers, maxDistance / 6371000 ]
               }
             }
           };

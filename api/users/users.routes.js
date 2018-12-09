@@ -37,7 +37,7 @@ const router = express.Router();
  *       "href": "/api/users/d68cf4e9-1349-4d45-b356-c1294e49ef23",
  *       "id": "d68cf4e9-1349-4d45-b356-c1294e49ef23",
  *       "name": "jdoe",
- *       "tripsCount": 2,
+ *       "tripsCount": 0,
  *       "updatedAt": "2018-12-09T11:58:18.265Z"
  *     }
  *
@@ -86,7 +86,7 @@ router.post('/',
   createUser);
 
 /**
- * @api {get} /api/users List user accounts
+ * @api {get} /api/users List or search user accounts
  * @apiName RetrieveAllUsers
  * @apiGroup Users
  *
@@ -146,7 +146,7 @@ router.get('/',
   retrieveAllUsers);
 
 /**
- * @api {get} /api/users/:id Retrieve a user account
+ * @api {get} /api/users/:id Retrieve one user account
  * @apiName RetrieveUser
  * @apiGroup Users
  *
@@ -248,8 +248,6 @@ router.get('/:id',
  *       },
  *       "message": "User validation failed: name: Path `name` is invalid (---)."
  *     }
- *
- * @apiUse ProtectedResource
  */
 router.patch('/:id',
   authenticate,

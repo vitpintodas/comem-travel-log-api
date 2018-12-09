@@ -7,7 +7,7 @@ const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
 
-const USERS_PIPELINE = countRelatedPipelineFactory(User, 'Trip');
+const PIPELINE = countRelatedPipelineFactory(User, 'Trip');
 
 const usersLogger = config.logger('api:users');
 
@@ -27,7 +27,7 @@ exports.createUser = route(async (req, res) => {
 
 exports.retrieveAllUsers = route(async (req, res) => {
 
-  const paginatedPipeline = await paginate(req, res, User, USERS_PIPELINE, createUserFilters);
+  const paginatedPipeline = await paginate(req, res, User, PIPELINE, createUserFilters);
   const sortedPipeline = await sortUsersPipeline(req, paginatedPipeline);
   const users = await aggregateToDocuments(User, sortedPipeline);
 
