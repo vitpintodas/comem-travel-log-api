@@ -97,8 +97,8 @@ router.post('/',
  * @apiUse Pagination
  * @apiUse UserResponseBody
  *
- * @apiParam (URL Query Parameters) {String} name Select users with the specified name(s).
- * @apiParam (URL Query Parameters) {String} search Select users with a name or description containing the specified search term(s).
+ * @apiParam (URL Query Parameters) {String} [name] Select users with the specified name(s).
+ * @apiParam (URL Query Parameters) {String} [search] Select users with a name or description containing the specified search term(s).
  *
  * @apiParamExample {query} name
  *     &name=jdoe
@@ -192,6 +192,8 @@ router.get('/:id',
  *
  * **Authorization:** a user account may only be modified by the user itself.
  *
+ * You can send either a partial or a full update. Only properties present in the request will be updated.
+ *
  * @apiUse JsonRequestBody
  * @apiUse UserResponseBody
  * @apiUse AuthorizedResource
@@ -211,7 +213,6 @@ router.get('/:id',
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Location: https://comem-travel-log-api.herokuapp.com/api/users/d68cf4e9-1349-4d45-b356-c1294e49ef23
  *
  *     {
  *       "createdAt": "2018-12-09T11:58:18.265Z",

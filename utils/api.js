@@ -59,6 +59,8 @@ async function paginate(req, res, model, pipeline, filtersFactory) {
   res.set('Link', formatLinkHeader(links));
 
   // Also add custom header to indicate the totals to the client
+  res.set('Pagination-Page', page);
+  res.set('Pagination-Page-Size', pageSize);
   res.set('Pagination-Total', total);
   res.set('Pagination-Filtered-Total', filteredTotal);
 

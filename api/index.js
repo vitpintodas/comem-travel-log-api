@@ -81,7 +81,7 @@ function serializeError(err) {
 /**
  * @apiDefine AuthorizedResource
  *
- * @apiHeader (Request Headers) {String} Authorization You must send a bearer token to authenticate.
+ * @apiHeader (Request Headers) {String} Authorization You must send a bearer token to authenticate. Use `POST /api/auth` to request an authentication token.
  *
  * @apiHeaderExample {String} Authorization
  *     Authorization: Bearer eyJhbGciOiJIUzI1N.eyJzdWIiOiIxMjM0NTY3ODkw.SflKxwRJSMeKKF
@@ -171,8 +171,8 @@ function serializeError(err) {
 /**
  * @apiDefine Pagination
  *
- * @apiParam (URL Query Parameters) {Number{1..}} page=1 Number of the page to display.
- * @apiParam (URL Query Parameters) {Number{1..50}} pageSize=10 The number of elements to display per page.
+ * @apiParam (URL Query Parameters) {Number{1..}} [page=1] Number of the page to display.
+ * @apiParam (URL Query Parameters) {Number{1..50}} [pageSize=10] The number of elements to display per page.
  *
  * @apiParamExample {query} page
  *     &page=2
@@ -183,8 +183,8 @@ function serializeError(err) {
 /**
  * @apiDefine IdentifiedResource
  *
- * @apiParam (URL Query Parameters) {String} href Select the elements with the specified hyperlink reference(s).
- * @apiParam (URL Query Parameters) {String} id Select the elements with the specified ID(s).
+ * @apiParam (URL Query Parameters) {String} [href] Select the elements with the specified hyperlink reference(s).
+ * @apiParam (URL Query Parameters) {String} [id] Select the elements with the specified ID(s).
  *
  * @apiParamExample {query} id
  *     &id=d68cf4e9-1349-4d45-b356-c1294e49ef23

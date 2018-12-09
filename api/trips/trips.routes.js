@@ -99,8 +99,8 @@ router.post('/',
  * @apiUse Pagination
  * @apiUse UserResponseBody
  *
- * @apiParam (URL Query Parameters) {String} title Select trips with the specified title(s).
- * @apiParam (URL Query Parameters) {String} search Select trips with a title or description containing the specified search term(s).
+ * @apiParam (URL Query Parameters) {String} [title] Select trips with the specified title(s).
+ * @apiParam (URL Query Parameters) {String} [search] Select trips with a title or description containing the specified search term(s).
  *
  * @apiParamExample {query} title
  *     &title=My+Bad+Trip
@@ -203,6 +203,8 @@ router.get('/:id',
  *
  * **Authorization:** a trip may only be modified by the user who created it.
  *
+ * You can send either a partial or a full update. Only properties present in the request will be updated.
+ *
  * @apiUse JsonRequestBody
  * @apiUse TripResponseBody
  * @apiUse AuthorizedResource
@@ -222,7 +224,6 @@ router.get('/:id',
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Location: https://comem-travel-log-api.herokuapp.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf
  *
  *     {
  *       "createdAt": "2018-12-09T11:58:18.265Z",
@@ -309,13 +310,13 @@ router.delete('/:id',
 /**
  * @apiDefine TripResponseBody
  *
- * @apiSuccess (JSON Response Body) {String} id Unique identifier of the trip.
- * @apiSuccess (JSON Response Body) {String} href Hyperlink reference to the trip.
- * @apiSuccess (JSON Response Body) {String} title Unique title of the trip.
- * @apiSuccess (JSON Response Body) {String} description A detailed description of the trip.
+ * @apiSuccess (JSON Response Body) {String{36}} id Unique identifier of the trip.
+ * @apiSuccess (JSON Response Body) {String{47}} href Hyperlink reference to the trip.
+ * @apiSuccess (JSON Response Body) {String{3..100}} title Unique title of the trip.
+ * @apiSuccess (JSON Response Body) {String{5..50000}} description A detailed description of the trip.
  * @apiSuccess (JSON Response Body) {Number} placesCount The number of places in the trip.
- * @apiSuccess (JSON Response Body) {String} userId The unique identifier of the user who created the trip.
- * @apiSuccess (JSON Response Body) {String} userHref A hyperlink reference to the user who created the trip.
+ * @apiSuccess (JSON Response Body) {String{36}} userId The unique identifier of the user who created the trip.
+ * @apiSuccess (JSON Response Body) {String{47}} userHref A hyperlink reference to the user who created the trip.
  * @apiSuccess (JSON Response Body) {Date} createdAt The date at which the trip was created.
  * @apiSuccess (JSON Response Body) {Date} updatedAt The date at which the trip was last modified.
  */
