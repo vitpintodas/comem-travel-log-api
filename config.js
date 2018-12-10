@@ -14,6 +14,7 @@ const root = __dirname;
 const configFromEnvironment = {
   baseUrl: process.env.BASE_URL,
   bcryptCost: parseEnvInt('BCRYPT_COST'),
+  cors: parseEnvBoolean('CORS'),
   db: process.env.DATABASE_URI || process.env.DATABASE_URL || process.env.MONGODB_URI || process.env.MONGODB_URL,
   docs: {
     browser: process.env.DOCS_BROWSER,
@@ -29,6 +30,7 @@ const defaultConfig = {
   baseUrl: `http://localhost:${configFromEnvironment.port || 3000}`,
   bcryptCost: 10,
   db: 'mongodb://localhost/comem-travel-log-api',
+  cors: false,
   docs: {
     open: true
   },
@@ -54,6 +56,8 @@ if (!isInteger(config.bcryptCost)) {
   throw new Error(`Configuration property "db" must be a string, but its type is ${typeof config.db}`);
 } else if (!config.db.match(/^mongodb:\/\/[^\s]+$/)) {
   throw new Error(`Configuration property "db" must be a MongoDB URI starting with "mongodb://", value "${config.db}" is not a valid MongoDB URI`);
+} else if (typeof config.cors !== 'boolean') {
+  throw new Error(`Configuration property "cors" must be a boolean, but its type is ${typeof config.cors}`);
 } else if (config.docs.port !== undefined && typeof config.docs.port !== 'number') {
   throw new Error(`Configuration property "docs.port" must be a port number, but its type is ${typeof config.docs.port}`);
 } else if (config.docs.port !== undefined && (!isInteger(config.docs.port) || config.docs.port < 0 || config.docs.port > 65535)) {
