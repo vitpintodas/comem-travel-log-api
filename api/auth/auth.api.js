@@ -5,6 +5,7 @@ const config = require('../../config');
 const User = require('../../models/user');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
+const { addTripsCountToUser } = require('../users/users.api');
 
 const authLogger = config.logger('api:auth');
 
@@ -37,6 +38,8 @@ exports.createAuthenticationToken = route(async (req, res) => {
   if (!passwordIsValid) {
     throw createError(401, 'authCredentialsInvalid', 'Password is incorrect');
   }
+
+  await addTripsCountToUser(user);
 
   const token = await signJwt({
     exp: new Date().getTime() / 1000 + 2 * 7 * 24 * 60 * 60, // Valid 2 weeks

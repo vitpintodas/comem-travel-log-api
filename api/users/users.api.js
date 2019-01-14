@@ -1,4 +1,5 @@
 const { escapeRegExp, isArray } = require('lodash');
+const mongoose = require('mongoose');
 
 const config = require('../../config');
 const User = require('../../models/user');
@@ -16,6 +17,7 @@ exports.createUser = route(async (req, res) => {
   const user = new User().parseFrom(req.body);
   await user.setPassword(req.body.password);
   await user.save();
+  user.tripsCount = 0;
 
   res
     .status(201)
@@ -69,6 +71,10 @@ exports.canModify = function(req) {
   return req.currentUser && req.user && req.currentUser.apiId === req.user.apiId;
 };
 
+exports.addTripsCountToUser = async user => {
+  user.tripsCount = await mongoose.model('Trip').count({ user: user._id });
+};
+
 exports.loadUserById = route(async (req, res, next) => {
 
   const apiId = req.params.id;
@@ -80,6 +86,8 @@ exports.loadUserById = route(async (req, res, next) => {
   if (!user) {
     return next(userNotFound(apiId));
   }
+
+  await exports.addTripsCountToUser(user);
 
   req.user = user;
   next();
