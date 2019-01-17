@@ -33,11 +33,18 @@ tripSchema.plugin(timestampsPlugin);
 tripSchema.plugin(transientPropertyPluginFactory('placesCount'));
 tripSchema.plugin(uniqueValidatorPlugin);
 
-tripSchema.methods.toJSON = function() {
-  return {
+tripSchema.methods.toJSON = function(options = {}) {
+
+  const serialized = {
     id: this.apiId,
     ...pick(this, 'href', 'title', 'description', 'placesCount', 'userId', 'userHref', 'createdAt', 'updatedAt')
   };
+
+  if (options.include && options.include.indexOf('user') >= 0) {
+    serialized.user = this.user.toJSON();
+  }
+
+  return serialized;
 };
 
 tripSchema.statics.apiResource = '/api/trips';

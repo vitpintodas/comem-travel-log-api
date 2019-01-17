@@ -39,7 +39,7 @@ exports.retrieveAllTrips = route(async (req, res) => {
 
   await Trip.populate(trips, 'user');
 
-  res.send(trips);
+  res.send(trips.toJSON({ include: toArray(req.query.include) }));
 });
 
 exports.retrieveTrip = route(async (req, res) => {
