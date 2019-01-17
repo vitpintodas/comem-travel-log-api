@@ -117,8 +117,6 @@ router.post('/',
  *     ?sort=user.name&sort=-placesCount&sort=-updatedAt
  * @apiParamExample {query} href
  *     ?href=/api/trips/d68cf4e9-1349-4d45-b356-c1294e49ef23
- * @apiParamExample {query} include
- *     ?include=user
  *
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
@@ -329,6 +327,8 @@ router.delete('/:id',
 /**
  * @apiDefine TripIncludes
  * @apiParam (URL Query Parameters) {String="user"} [include] Include associated resources in the response (e.g. adding `?include=user` will add a `user` object to the JSON response body).
+ * @apiParamExample {query} include
+ *     ?include=user
  */
 
 /**
