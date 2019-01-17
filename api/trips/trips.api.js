@@ -26,7 +26,7 @@ exports.createTrip = route(async (req, res) => {
   res
     .status(201)
     .set('Location', config.joinUrl(trip.href))
-    .send(trip);
+    .send(trip.toJSON({ req }));
 
   tripsLogger.info(`Created trip ${trip.apiId} titled "${trip.title}" for user ${trip.user.apiId}`);
 });
@@ -39,11 +39,11 @@ exports.retrieveAllTrips = route(async (req, res) => {
 
   await Trip.populate(trips, 'user');
 
-  res.send(trips.map(trip => trip.toJSON({ include: toArray(req.query.include) })));
+  res.send(trips.map(trip => trip.toJSON({ req })));
 });
 
 exports.retrieveTrip = route(async (req, res) => {
-  res.send(req.trip.toJSON({ include: toArray(req.query.include) }));
+  res.send(req.trip.toJSON({ req }));
 });
 
 exports.updateTrip = route(async (req, res) => {
@@ -52,8 +52,9 @@ exports.updateTrip = route(async (req, res) => {
   trip.parseFrom(req.body);
 
   await trip.save();
+  await trip.populate('user').execPopulate();
 
-  res.send(trip);
+  res.send(trip.toJSON({ req }));
 
   tripsLogger.info(`Updated trip ${trip.apiId} titled "${trip.title}"`);
 });

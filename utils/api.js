@@ -1,6 +1,6 @@
 const formatLinkHeader = require('format-link-header');
 const { camelize, pluralize } = require('inflection');
-const { compact, get, isArray, isEmpty, isInteger, isObject, isPlainObject, keys, reduce, uniqBy, without } = require('lodash');
+const { compact, get, includes, isArray, isEmpty, isInteger, isObject, isPlainObject, keys, reduce, uniqBy, without } = require('lodash');
 const mongoose = require('mongoose');
 const { stringify: stringifyQuery } = require('qs');
 const { parse: parseUrl } = require('url');
@@ -286,4 +286,8 @@ function toArray(value) {
   return isArray(value) ? value : [ value ];
 }
 
-module.exports = { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, ensureSingleQueryParam, invalidQueryParamError, paginate, requireJson, sortPipelineFactory, toArray };
+function includeRequested(req, value) {
+  return req && req.query && includes(toArray(req.query.include), value);
+}
+
+module.exports = { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, ensureSingleQueryParam, includeRequested, invalidQueryParamError, paginate, requireJson, sortPipelineFactory, toArray };

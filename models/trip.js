@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const uniqueValidatorPlugin = require('mongoose-unique-validator');
 
 const config = require('../config');
+const { includeRequested } = require('../utils/api');
 const { apiIdPlugin, hrefPlugin, parsePlugin, relatedHrefPluginFactory, timestampsPlugin, transientPropertyPluginFactory } = require('../utils/models');
 
 const Schema = mongoose.Schema;
@@ -40,7 +41,7 @@ tripSchema.methods.toJSON = function(options = {}) {
     ...pick(this, 'href', 'title', 'description', 'placesCount', 'userId', 'userHref', 'createdAt', 'updatedAt')
   };
 
-  if (options.include && options.include.indexOf('user') >= 0) {
+  if (includeRequested(options.req, 'user')) {
     serialized.user = this.user.toJSON();
   }
 
