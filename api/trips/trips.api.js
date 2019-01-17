@@ -43,7 +43,7 @@ exports.retrieveAllTrips = route(async (req, res) => {
 });
 
 exports.retrieveTrip = route(async (req, res) => {
-  res.send(req.trip);
+  res.send(req.trip.toJSON({ include: toArray(req.query.include) }));
 });
 
 exports.updateTrip = route(async (req, res) => {
