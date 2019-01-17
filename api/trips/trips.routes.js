@@ -15,6 +15,7 @@ const router = express.Router();
  *
  * @apiUse AuthorizedResource
  * @apiUse JsonRequestBody
+ * @apiUse TripIncludes
  * @apiUse TripResponseBody
  *
  * @apiParam (JSON Request Body) {String{3..100}} title Title of the trip. Must be unique.
@@ -98,6 +99,7 @@ router.post('/',
  *
  * @apiUse IdentifiedResource
  * @apiUse Pagination
+ * @apiUse TripIncludes
  * @apiUse TripResponseBody
  *
  * @apiParam (URL Query Parameters) {String} [user] Select trips owned by the user(s) with the specified ID(s).
@@ -115,6 +117,8 @@ router.post('/',
  *     ?sort=user.name&sort=-placesCount&sort=-updatedAt
  * @apiParamExample {query} href
  *     ?href=/api/trips/d68cf4e9-1349-4d45-b356-c1294e49ef23
+ * @apiParamExample {query} include
+ *     ?include=user
  *
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
@@ -172,6 +176,7 @@ router.get('/',
  * @apiGroup Trips
  *
  * @apiUse UrlIdentifier
+ * @apiUse TripIncludes
  * @apiUse TripResponseBody
  *
  * @apiParamExample {request} Request Example
@@ -219,6 +224,7 @@ router.get('/:id',
  * You can send either a partial or a full update. Only properties present in the request will be updated.
  *
  * @apiUse JsonRequestBody
+ * @apiUse TripIncludes
  * @apiUse TripResponseBody
  * @apiUse AuthorizedResource
  * @apiUse ProtectedResource
@@ -319,6 +325,11 @@ router.delete('/:id',
   loadTripById,
   authorize(canModify),
   removeTrip);
+
+/**
+ * @apiDefine TripIncludes
+ * @apiParam (URL Query Parameters) {String="user"} [include] Include associated resources in the response (e.g. adding `?include=user` will add a `user` object to the JSON response body).
+ */
 
 /**
  * @apiDefine TripResponseBody
