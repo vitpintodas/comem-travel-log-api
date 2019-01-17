@@ -112,7 +112,7 @@ router.post('/',
  * @apiUse Pagination
  * @apiUse UserResponseBody
  *
- * @apiParam (URL Query Parameters) {String} [trip] Select places in the specified trip(s).
+ * @apiParam (URL Query Parameters) {String} [trip] Select places in the trip(s) with the specified ID(s).
  * @apiParam (URL Query Parameters) {String} [name] Select places with the specified name(s).
  * @apiParam (URL Query Parameters) {String} [search] Select places with a name or description containing the specified search term(s).
  * @apiParam (URL Query Parameters) {String} [bbox] Select places within a rectangular geographical area. This must be a comma-delimited string of 4 numbers: the longitude and latitude of the bounding box's south-west corner, followed by the longitude and latitude of the bounding box's north-east corner.
