@@ -2,6 +2,7 @@ const { escapeRegExp, isFinite } = require('lodash');
 
 const config = require('../../config');
 const Place = require('../../models/place');
+const Trip = require('../../models/trip');
 const { addRelatedPropertyPipelineFactory, invalidQueryParamError, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
 const { forbiddenError } = require('../../utils/auth');
 const { createError } = require('../../utils/errors');
@@ -253,6 +254,24 @@ async function createPlaceFilters(req) {
             description: new RegExp(escapeRegExp(value), 'i')
           }
         ], [])
+      }
+    });
+  }
+
+  if (req.query.trip) {
+
+    const tripIds = toArray(req.query.trip);
+    const trips = await Trip.find({
+      apiId: {
+        $in: tripIds
+      }
+    });
+
+    filters.push({
+      $match: {
+        trip: {
+          $in: trips.map(trip => trip._id)
+        }
       }
     });
   }
