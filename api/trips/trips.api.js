@@ -2,6 +2,7 @@ const { escapeRegExp } = require('lodash');
 
 const config = require('../../config');
 const Trip = require('../../models/trip');
+const User = require('../../models/user');
 const { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
@@ -135,6 +136,24 @@ async function createTripFilters(req) {
             description: new RegExp(escapeRegExp(value), 'i')
           }
         ], [])
+      }
+    });
+  }
+
+  if (req.query.user) {
+
+    const userIds = toArray(req.query.user);
+    const users = await User.find({
+      apiId: {
+        $in: userIds
+      }
+    });
+
+    filters.push({
+      $match: {
+        user: {
+          $in: users.map(user => user._id)
+        }
       }
     });
   }

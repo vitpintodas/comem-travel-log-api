@@ -98,12 +98,15 @@ router.post('/',
  *
  * @apiUse IdentifiedResource
  * @apiUse Pagination
- * @apiUse UserResponseBody
+ * @apiUse TripResponseBody
  *
+ * @apiParam (URL Query Parameters) {String} [user] Select trips owned by the user(s) with the specified ID(s).
  * @apiParam (URL Query Parameters) {String} [title] Select trips with the specified title(s).
  * @apiParam (URL Query Parameters) {String} [search] Select trips with a title or description containing the specified search term(s).
  * @apiParam (URL Query Parameters) {String="title","placesCount","createdAt","updatedAt","id","href","user.name","user.id","user.href"} [sort=-createdAt] Specify how the listed trips will be sorted. Prefix a parameter with a minus sign (`-`) to sort in descending order. This parameter can be used multiple times to sort by multiple criteria.
  *
+ * @apiParamExample {query} user
+ *     ?user=ceedea00-507a-4b27-a025-8918ca6758b9
  * @apiParamExample {query} title
  *     ?title=My+Bad+Trip
  * @apiParamExample {query} search
