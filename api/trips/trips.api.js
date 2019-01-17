@@ -1,3 +1,5 @@
+const { escapeRegExp } = require('lodash');
+
 const config = require('../../config');
 const Trip = require('../../models/trip');
 const { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, paginate, sortPipelineFactory, toArray } = require('../../utils/api');
