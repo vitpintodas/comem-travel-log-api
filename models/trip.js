@@ -1,4 +1,4 @@
-const { pick } = require('lodash');
+const { compact, pick } = require('lodash');
 const mongoose = require('mongoose');
 const uniqueValidatorPlugin = require('mongoose-unique-validator');
 
@@ -41,8 +41,8 @@ tripSchema.methods.toJSON = function(options = {}) {
     ...pick(this, 'href', 'title', 'description', 'placesCount', 'userId', 'userHref', 'createdAt', 'updatedAt')
   };
 
-  if (includeRequested(options.req, 'user')) {
-    serialized.user = this.user.toJSON();
+  if (includeRequested(options.req, 'user', options.includeContext)) {
+    serialized.user = this.user.toJSON({ req: options.req, includeContext: compact([ options.includeContext, 'user' ]).join('.') });
   }
 
   return serialized;

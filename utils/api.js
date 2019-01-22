@@ -286,8 +286,8 @@ function toArray(value) {
   return isArray(value) ? value : [ value ];
 }
 
-function includeRequested(req, value) {
-  return req && req.query && includes(toArray(req.query.include), value);
+function includeRequested(req, value, context) {
+  return req && req.query && includes(toArray(req.query.include), compact([ context, value ]).join('.'));
 }
 
 module.exports = { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, ensureSingleQueryParam, includeRequested, invalidQueryParamError, paginate, requireJson, sortPipelineFactory, toArray };

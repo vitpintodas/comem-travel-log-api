@@ -1,8 +1,9 @@
-const { escapeRegExp, isArray, isFinite, pick } = require('lodash');
+const { compact, escapeRegExp, isArray, isFinite, pick } = require('lodash');
 const mongoose = require('mongoose');
 const uniqueValidatorPlugin = require('mongoose-unique-validator');
 
 const config = require('../config');
+const { includeRequested } = require('../utils/api');
 const { apiIdPlugin, hrefPlugin, parsePlugin, relatedHrefPluginFactory, timestampsPlugin } = require('../utils/models');
 
 const Schema = mongoose.Schema;
@@ -58,11 +59,18 @@ placeSchema.plugin(relatedHrefPluginFactory('Trip', { logger: placeLogger }));
 placeSchema.plugin(timestampsPlugin);
 placeSchema.plugin(uniqueValidatorPlugin);
 
-placeSchema.methods.toJSON = function() {
-  return {
+placeSchema.methods.toJSON = function(options = {}) {
+
+  const serialized = {
     id: this.apiId,
     ...pick(this, 'href', 'name', 'description', 'location', 'pictureUrl', 'tripId', 'tripHref', 'createdAt', 'updatedAt')
   };
+
+  if (includeRequested(options.req, 'trip', options.includeContext) || includeRequested(options.req, 'trip.user', options.includeContext)) {
+    serialized.trip = this.trip.toJSON({ req: options.req, includeContext: compact([ options.includeContext, 'trip' ]).join('.') });
+  }
+
+  return serialized;
 };
 
 placeSchema.statics.apiResource = '/api/places';

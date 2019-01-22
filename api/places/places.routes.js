@@ -17,6 +17,7 @@ const router = express.Router();
  *
  * @apiUse AuthorizedResource
  * @apiUse JsonRequestBody
+ * @apiUse PlaceIncludes
  * @apiUse PlaceResponseBody
  *
  * @apiParam (JSON Request Body) {String{3..100}} name Name of the place. Must be unique within the trip.
@@ -110,7 +111,8 @@ router.post('/',
  *
  * @apiUse IdentifiedResource
  * @apiUse Pagination
- * @apiUse UserResponseBody
+ * @apiUse PlaceIncludes
+ * @apiUse PlaceResponseBody
  *
  * @apiParam (URL Query Parameters) {String} [trip] Select places in the trip(s) with the specified ID(s).
  * @apiParam (URL Query Parameters) {String} [name] Select places with the specified name(s).
@@ -197,6 +199,7 @@ router.get('/',
  * @apiGroup Places
  *
  * @apiUse UrlIdentifier
+ * @apiUse PlaceIncludes
  * @apiUse PlaceResponseBody
  *
  * @apiParamExample {request} Request Example
@@ -248,6 +251,7 @@ router.get('/:id',
  * You can send either a partial or a full update. Only properties present in the request will be updated.
  *
  * @apiUse JsonRequestBody
+ * @apiUse PlaceIncludes
  * @apiUse PlaceResponseBody
  * @apiUse AuthorizedResource
  * @apiUse ProtectedResource
@@ -357,6 +361,13 @@ router.delete('/:id',
   loadPlaceById,
   authorize(canModify),
   removePlace);
+
+/**
+ * @apiDefine PlaceIncludes
+ * @apiParam (URL Query Parameters) {String="trip","trip.user"} [include] Include associated resources in the response (e.g. adding `?include=trip` will add a `trip` object to the JSON response body).
+ * @apiParamExample {query} include
+ *     ?include=trip.user
+ */
 
 /**
  * @apiDefine PlaceResponseBody

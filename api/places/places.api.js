@@ -31,7 +31,7 @@ exports.createPlace = route(async (req, res) => {
   res
     .status(201)
     .set('Location', config.joinUrl(place.href))
-    .send(place);
+    .send(place.toJSON({ req }));
 
   placesLogger.info(`Created place ${place.apiId} named "${place.name}" in trip ${place.trip.apiId}`);
 });
@@ -44,11 +44,11 @@ exports.retrieveAllPlaces = route(async (req, res) => {
 
   await Place.populate(places, POPULATE);
 
-  res.send(places);
+  res.send(places.map(place => place.toJSON({ req })));
 });
 
 exports.retrievePlace = route(async (req, res) => {
-  res.send(req.place);
+  res.send(req.place.toJSON({ req }));
 });
 
 exports.updatePlace = route(async (req, res) => {
@@ -59,8 +59,9 @@ exports.updatePlace = route(async (req, res) => {
   // TODO: handle trip change
 
   await place.save();
+  await place.populate(POPULATE).execPopulate();
 
-  res.send(place);
+  res.send(place.toJSON({ req }));
 
   placesLogger.info(`Updated place ${place.apiId} named "${place.name}"`);
 });
