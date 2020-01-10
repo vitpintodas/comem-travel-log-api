@@ -8,6 +8,7 @@ const { forbiddenError } = require('../../utils/auth');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
+const { onResourceCreated, onResourceRemoved } = require('../ws');
 
 const PIPELINE = addRelatedPropertyPipelineFactory(Place, 'Trip', [ 'apiId', 'title' ]);
 
@@ -34,6 +35,8 @@ exports.createPlace = route(async (req, res) => {
     .send(place.toJSON({ req }));
 
   placesLogger.info(`Created place ${place.apiId} named "${place.name}" in trip ${place.trip.apiId}`);
+
+  onResourceCreated(place);
 });
 
 exports.retrieveAllPlaces = route(async (req, res) => {
@@ -74,6 +77,8 @@ exports.removePlace = route(async (req, res) => {
   res.sendStatus(204);
 
   placesLogger.info(`Removed place ${place.apiId} named "${place.name}"`);
+
+  onResourceRemoved(place);
 });
 
 exports.canModify = function(req) {

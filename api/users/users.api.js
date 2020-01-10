@@ -7,6 +7,7 @@ const { countRelatedPipelineFactory, paginate, sortPipelineFactory, toArray } = 
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
+const { onResourceCreated, onResourceRemoved } = require('../ws');
 
 const PIPELINE = countRelatedPipelineFactory(User, 'Trip');
 
@@ -25,6 +26,8 @@ exports.createUser = route(async (req, res) => {
     .send(user);
 
   usersLogger.info(`Created user ${user.apiId} named "${user.name}"`);
+
+  onResourceCreated(user);
 });
 
 exports.retrieveAllUsers = route(async (req, res) => {
@@ -65,6 +68,8 @@ exports.removeUser = route(async (req, res) => {
   res.sendStatus(204);
 
   usersLogger.info(`Removed user ${user.apiId} named "${user.name}"`);
+
+  onResourceRemoved(user);
 });
 
 exports.canModify = function(req) {
