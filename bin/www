@@ -3,10 +3,13 @@ const http = require('http');
 
 const app = require('../app');
 const config = require('../config');
+const ws = require('../api/ws');
 
 const appLogger = config.logger('app');
 const port = config.port;
 const server = http.createServer(app);
+
+ws.createServer(server);
 
 // Entrypoint
 Promise
