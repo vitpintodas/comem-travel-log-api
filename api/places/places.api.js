@@ -8,7 +8,7 @@ const { forbiddenError } = require('../../utils/auth');
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
-const { onResourceCreated, onResourceRemoved } = require('../ws');
+const { onResourceCreated, onResourceRemoved, onResourceUpdated } = require('../ws');
 
 const PIPELINE = addRelatedPropertyPipelineFactory(Place, 'Trip', [ 'apiId', 'title' ]);
 
@@ -67,6 +67,8 @@ exports.updatePlace = route(async (req, res) => {
   res.send(place.toJSON({ req }));
 
   placesLogger.info(`Updated place ${place.apiId} named "${place.name}"`);
+
+  onResourceUpdated(place);
 });
 
 exports.removePlace = route(async (req, res) => {

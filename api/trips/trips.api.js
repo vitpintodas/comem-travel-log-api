@@ -7,7 +7,7 @@ const { addRelatedPropertyPipelineFactory, countRelatedPipelineFactory, paginate
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
-const { onResourceCreated, onResourceRemoved } = require('../ws');
+const { onResourceCreated, onResourceRemoved, onResourceUpdated } = require('../ws');
 
 const PIPELINE = [
   ...countRelatedPipelineFactory(Trip, 'Place'),
@@ -60,6 +60,8 @@ exports.updateTrip = route(async (req, res) => {
   res.send(trip.toJSON({ req }));
 
   tripsLogger.info(`Updated trip ${trip.apiId} titled "${trip.title}"`);
+
+  onResourceUpdated(trip);
 });
 
 exports.removeTrip = route(async (req, res) => {

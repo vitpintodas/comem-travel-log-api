@@ -7,7 +7,7 @@ const { countRelatedPipelineFactory, paginate, sortPipelineFactory, toArray } = 
 const { createError } = require('../../utils/errors');
 const { route } = require('../../utils/express');
 const { aggregateToDocuments } = require('../../utils/models');
-const { onResourceCreated, onResourceRemoved } = require('../ws');
+const { onResourceCreated, onResourceRemoved, onResourceUpdated } = require('../ws');
 
 const PIPELINE = countRelatedPipelineFactory(User, 'Trip');
 
@@ -58,6 +58,8 @@ exports.updateUser = route(async (req, res) => {
   res.send(user);
 
   usersLogger.info(`Updated user ${user.apiId} named "${user.name}"`);
+
+  onResourceUpdated(user);
 });
 
 exports.removeUser = route(async (req, res) => {

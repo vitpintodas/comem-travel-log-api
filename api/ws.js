@@ -19,7 +19,7 @@ exports.createServer = function(server) {
     wsClients.push(ws);
     wsLogger.info(`WebSocket client has connected from ${req.connection.remoteAddress}`);
 
-    ws.send('hello');
+    Promise.resolve().then(() => computeAndSendStats([ ws ]));
 
     ws.on('close', (code, reason) => {
       wsClients.splice(wsClients.indexOf(ws), 1);
@@ -31,36 +31,33 @@ exports.createServer = function(server) {
 exports.onResourceCreated = function(createdResource) {
   Promise
     .resolve()
-    .then(() => computeAndSendStats(createdResource, 'created'))
+    .then(() => computeAndSendStats(wsClients, createdResource, 'created'))
     .catch(err => wsLogger.warn(err.stack));
 };
 
 exports.onResourceRemoved = function(removedResource) {
   Promise
     .resolve()
-    .then(() => computeAndSendStats(removedResource, 'removed'))
+    .then(() => computeAndSendStats(wsClients, removedResource, 'removed'))
     .catch(err => wsLogger.warn(err.stack));
 };
 
-async function computeAndSendStats(resource, action) {
-  if (!wsClients.length) {
+exports.onResourceUpdated = function(updatedResource) {
+  Promise
+    .resolve()
+    .then(() => computeAndSendStats(wsClients, updatedResource, 'updated', false))
+    .catch(err => wsLogger.warn(err.stack));
+};
+
+async function computeAndSendStats(clients, resource, action, stats = true) {
+  if (!clients.length) {
     return;
   }
 
-  const [ placesCount, tripsCount, usersCount ] = await Promise.all([
-    Place.count(),
-    Trip.count(),
-    User.count()
-  ]);
+  const message = {};
 
-  const message = {
-    stats: {
-      placesCount, tripsCount, usersCount,
-      computedAt: new Date()
-    }
-  };
-
-  switch (resource.constructor) {
+  const model = resource ? resource.constructor : undefined;
+  switch (model) {
     case Place:
       message.type = `place${capitalize(action)}`;
       message.place = resource;
@@ -77,7 +74,25 @@ async function computeAndSendStats(resource, action) {
       message.type = 'stats';
   }
 
-  for (ws of wsClients) {
+  if (stats) {
+    message.stats = await computeStats();
+  }
+
+  for (ws of clients) {
     ws.send(JSON.stringify(message));
   }
+}
+
+async function computeStats() {
+
+  const [ placesCount, tripsCount, usersCount ] = await Promise.all([
+    Place.count(),
+    Trip.count(),
+    User.count()
+  ]);
+
+  return {
+    placesCount, tripsCount, usersCount,
+    computedAt: new Date()
+  };
 }
