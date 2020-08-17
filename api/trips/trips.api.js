@@ -1,4 +1,5 @@
 const { escapeRegExp } = require('lodash');
+const mongoose = require('mongoose');
 
 const config = require('../../config');
 const Trip = require('../../models/trip');
@@ -23,6 +24,8 @@ exports.createTrip = route(async (req, res) => {
 
   await trip.save();
   await trip.populate('user').execPopulate();
+
+  trip.placesCount = 0;
 
   res
     .status(201)
@@ -92,9 +95,15 @@ exports.loadTripById = route(async (req, res, next) => {
     return next(tripNotFound(apiId));
   }
 
+  await addPlacesCountToTrip(trip);
+
   req.trip = trip;
   next();
 });
+
+async function addPlacesCountToTrip(trip) {
+  trip.placesCount = await mongoose.model('Place').count({ trip: trip._id });
+};
 
 async function createTripFilters(req) {
 
