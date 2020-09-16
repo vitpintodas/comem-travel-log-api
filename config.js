@@ -54,8 +54,8 @@ if (!isInteger(config.bcryptCost)) {
   throw new Error(`Configuration property "bcryptCost" must be greater than or equal to 1, but its value is ${config.bcryptCost}`);
 } else if (typeof config.db !== 'string') {
   throw new Error(`Configuration property "db" must be a string, but its type is ${typeof config.db}`);
-} else if (!config.db.match(/^mongodb:\/\/[^\s]+$/)) {
-  throw new Error(`Configuration property "db" must be a MongoDB URI starting with "mongodb://", value "${config.db}" is not a valid MongoDB URI`);
+} else if (!config.db.match(/^mongodb(?:\+srv)?:\/\/[^\s]+$/)) {
+  throw new Error(`Configuration property "db" must be a MongoDB URI starting with "mongodb://" or "mongodb+srv://, value "${config.db}" is not a valid MongoDB URI`);
 } else if (typeof config.cors !== 'boolean') {
   throw new Error(`Configuration property "cors" must be a boolean, but its type is ${typeof config.cors}`);
 } else if (config.docs.port !== undefined && typeof config.docs.port !== 'number') {
