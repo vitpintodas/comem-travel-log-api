@@ -26,7 +26,7 @@ async function paginate(req, res, model, pipeline, filtersFactory) {
 
   // Parse the "pageSize" URL query parameter indicating the number of elements to load
   const pageSize = getPaginationQueryParameter(req.query.pageSize, 10);
-  if (!isInteger(pageSize) || pageSize < 0 || pageSize >= 50) {
+  if (!isInteger(pageSize) || pageSize < 0 || pageSize > 50) {
     throw invalidQueryParamError('pageSize', `Query parameter "pageSize" must be an integer greater than or equal to 0 and less than or equal to 50, but its value is "${req.query.pageSize}"`);
   }
 
@@ -65,7 +65,7 @@ async function paginate(req, res, model, pipeline, filtersFactory) {
   res.set('Pagination-Filtered-Total', filteredTotal);
 
   const pagination = [
-    { $skip: page - 1 },
+    { $skip: (page - 1) * pageSize },
     { $limit: pageSize }
   ];
 
