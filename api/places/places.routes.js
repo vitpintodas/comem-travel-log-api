@@ -28,7 +28,7 @@ const router = express.Router();
  * @apiParam (JSON Request Body) {String{10..500}} [pictureUrl] A URL to a picture of the place.
  *
  * @apiParamExample {request} Request Example
- *     POST https://comem-travel-log-api.herokuapp.com/api/places HTTP/1.1
+ *     POST https://comem-travel-log-api.onrender.com/api/places HTTP/1.1
  *     Content-Type: application/json
  *
  *     {
@@ -39,7 +39,7 @@ const router = express.Router();
  * @apiSuccessExample {json} 201 Created:
  *     HTTP/1.1 201 Created
  *     Content-Type: application/json
- *     Location: https://comem-travel-log-api.herokuapp.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb
+ *     Location: https://comem-travel-log-api.onrender.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb
  *
  *     {
  *       "createdAt": "2018-12-09T17:20:22.030Z",
@@ -107,7 +107,7 @@ router.post('/',
  * @apiGroup Places
  *
  * @apiParamExample {request} Request Example
- *     GET https://comem-travel-log-api.herokuapp.com/api/places HTTP/1.1
+ *     GET https://comem-travel-log-api.onrender.com/api/places HTTP/1.1
  *
  * @apiUse IdentifiedResource
  * @apiUse Pagination
@@ -139,8 +139,8 @@ router.post('/',
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Link: <https://comem-travel-log-api.herokuapp.com/api/places?pageSize=50&page=2>; rel="self last",
- *           <https://comem-travel-log-api.herokuapp.com/api/places?pageSize=50&page=1>; rel="first prev"
+ *     Link: <https://comem-travel-log-api.onrender.com/api/places?pageSize=50&page=2>; rel="self last",
+ *           <https://comem-travel-log-api.onrender.com/api/places?pageSize=50&page=1>; rel="first prev"
  *     Pagination-Page: 2
  *     Pagination-PageSize: 50
  *     Pagination-Total: 52
@@ -203,7 +203,7 @@ router.get('/',
  * @apiUse PlaceResponseBody
  *
  * @apiParamExample {request} Request Example
- *     GET https://comem-travel-log-api.herokuapp.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb HTTP/1.1
+ *     GET https://comem-travel-log-api.onrender.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb HTTP/1.1
  *
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
@@ -264,7 +264,7 @@ router.get('/:id',
  * @apiParam (JSON Request Body) {String{10..500}} [pictureUrl] A URL to a picture of the place.
  *
  * @apiParamExample {request} Request Example
- *     PATCH https://comem-travel-log-api.herokuapp.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb HTTP/1.1
+ *     PATCH https://comem-travel-log-api.onrender.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb HTTP/1.1
  *     Content-Type: application/json
  *
  *     {
@@ -340,7 +340,7 @@ router.patch('/:id',
  * @apiUse ProtectedResource
  *
  * @apiParamExample {request} Request Example
- *     DELETE https://comem-travel-log-api.herokuapp.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb HTTP/1.1
+ *     DELETE https://comem-travel-log-api.onrender.com/api/places/0860ab21-98e8-4cdd-a407-06d2a50989eb HTTP/1.1
  *
  * @apiSuccessExample {json} 204 No Content:
  *     HTTP/1.1 204 No Content

@@ -22,7 +22,7 @@ const router = express.Router();
  * @apiParam (JSON Request Body) {String{5..50000}} description A detailed description of the trip.
  *
  * @apiParamExample {request} Request Example
- *     POST https://comem-travel-log-api.herokuapp.com/api/trips HTTP/1.1
+ *     POST https://comem-travel-log-api.onrender.com/api/trips HTTP/1.1
  *     Content-Type: application/json
  *
  *     {
@@ -33,7 +33,7 @@ const router = express.Router();
  * @apiSuccessExample {json} 201 Created:
  *     HTTP/1.1 201 Created
  *     Content-Type: application/json
- *     Location: https://comem-travel-log-api.herokuapp.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf
+ *     Location: https://comem-travel-log-api.onrender.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf
  *
  *     {
  *       "createdAt": "2018-12-09T11:58:18.265Z",
@@ -95,7 +95,7 @@ router.post('/',
  * @apiGroup Trips
  *
  * @apiParamExample {request} Request Example
- *     GET https://comem-travel-log-api.herokuapp.com/api/trips HTTP/1.1
+ *     GET https://comem-travel-log-api.onrender.com/api/trips HTTP/1.1
  *
  * @apiUse IdentifiedResource
  * @apiUse Pagination
@@ -121,8 +121,8 @@ router.post('/',
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Link: <https://comem-travel-log-api.herokuapp.com/api/trips?pageSize=50&page=2>; rel="self last",
- *           <https://comem-travel-log-api.herokuapp.com/api/trips?pageSize=50&page=1>; rel="first prev"
+ *     Link: <https://comem-travel-log-api.onrender.com/api/trips?pageSize=50&page=2>; rel="self last",
+ *           <https://comem-travel-log-api.onrender.com/api/trips?pageSize=50&page=1>; rel="first prev"
  *     Pagination-Page: 2
  *     Pagination-PageSize: 50
  *     Pagination-Total: 52
@@ -178,7 +178,7 @@ router.get('/',
  * @apiUse TripResponseBody
  *
  * @apiParamExample {request} Request Example
- *     GET https://comem-travel-log-api.herokuapp.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf HTTP/1.1
+ *     GET https://comem-travel-log-api.onrender.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf HTTP/1.1
  *
  * @apiSuccessExample {json} 200 OK:
  *     HTTP/1.1 200 OK
@@ -231,7 +231,7 @@ router.get('/:id',
  * @apiParam (JSON Request Body) {String{5..50000}} [description] A detailed description of the trip.
  *
  * @apiParamExample {request} Request Example
- *     PATCH https://comem-travel-log-api.herokuapp.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf HTTP/1.1
+ *     PATCH https://comem-travel-log-api.onrender.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf HTTP/1.1
  *     Content-Type: application/json
  *
  *     {
@@ -302,7 +302,7 @@ router.patch('/:id',
  * @apiUse ProtectedResource
  *
  * @apiParamExample {request} Request Example
- *     DELETE https://comem-travel-log-api.herokuapp.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf HTTP/1.1
+ *     DELETE https://comem-travel-log-api.onrender.com/api/trips/7f063c6e-7717-401a-aa47-34a52f6a45cf HTTP/1.1
  *
  * @apiSuccessExample {json} 204 No Content:
  *     HTTP/1.1 204 No Content

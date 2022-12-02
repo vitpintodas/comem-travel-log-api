@@ -25,7 +25,7 @@ The authentication workflow is as follows:
 * When sending requests to a protected resource, send an `Authorization` header with your bearer token:
 
   ```http
-  POST https://comem-travel-log-api.herokuapp.com/api/trips HTTP/1.1
+  POST https://comem-travel-log-api.onrender.com/api/trips HTTP/1.1
   Content-Type: application/json
   Authorization: Bearer eyJhbGciOiJIUzI1N.eyJzdWIiOiIxMjM0NTY3ODkw.SflKxwRJSMeKKF
 
@@ -49,7 +49,7 @@ All list/search resources are paginated, meaning that if there are many elements
 When making a **request** to a paginated collection, you can specify the `page` and `pageSize` query parameters to customize which page and how many elements you want to list:
 
 ```http
-GET https://comem-travel-log-api.herokuapp.com/api/trips?page=2&pageSize=50 HTTP/1.1
+GET https://comem-travel-log-api.onrender.com/api/trips?page=2&pageSize=50 HTTP/1.1
 ```
 
 The **response** from the server will list the selected elements, along with metadata about the pagination in the form of:
@@ -67,8 +67,8 @@ The **response** from the server will list the selected elements, along with met
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://comem-travel-log-api.herokuapp.com/api/trips?pageSize=50&page=2>; rel="self last",
-      <https://comem-travel-log-api.herokuapp.com/api/trips?pageSize=50&page=1>; rel="first prev"
+Link: <https://comem-travel-log-api.onrender.com/api/trips?pageSize=50&page=2>; rel="self last",
+      <https://comem-travel-log-api.onrender.com/api/trips?pageSize=50&page=1>; rel="first prev"
 Pagination-Page: 2
 Pagination-PageSize: 50
 Pagination-Total: 52

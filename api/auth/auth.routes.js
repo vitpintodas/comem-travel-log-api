@@ -17,7 +17,7 @@ const router = express.Router();
  * @apiParam (JSON Request Body) {String} password The password of the user.
  *
  * @apiParamExample {request} Request Example
- *     POST https://comem-travel-log-api.herokuapp.com/api/auth HTTP/1.1
+ *     POST https://comem-travel-log-api.onrender.com/api/auth HTTP/1.1
  *     Content-Type: application/json
  *
  *     {

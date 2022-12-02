@@ -13,7 +13,7 @@ A sample API to develop a mobile application.
     - [First-time setup](#first-time-setup)
     - [Run the server in development mode with live reload](#run-the-server-in-development-mode-with-live-reload)
     - [Run the server in production mode](#run-the-server-in-production-mode)
-    - [Run the server on Heroku](#run-the-server-on-heroku)
+    - [Run the server on Render](#run-the-server-on-render)
 - [Configuration](#configuration)
 - [Scripts](#scripts)
 
@@ -55,36 +55,9 @@ npm run dev
 NODE_ENV=production npm start
 ```
 
-### Run the server on Heroku
+### Run the server on Render
 
-[Create the application][heroku-create]:
-
-```bash
-cd comem-travel-log-api
-heroku create comem-travel-log-api
-```
-
-Connect to the Heroku console and add the [mLab addon][heroku-mlab] to your application.
-
-Configure the correct base URL:
-
-```bash
-heroku config:set BASE_URL=https://comem-travel-log-api.herokuapp.com
-```
-
-Generate a long random key (e.g. 100 alphanumeric characters) and configure the secret:
-
-```bash
-heroku config:set SECRET=changeme
-```
-
-Deploy:
-
-```bash
-git push heroku master
-```
-
-
+TODO
 
 ## Configuration
 
@@ -131,7 +104,6 @@ Script               | Description
 
 [bcrypt]: https://en.wikipedia.org/wiki/Bcrypt
 [dotenv]: https://www.npmjs.com/package/dotenv
-[heroku-create]: https://devcenter.heroku.com/articles/creating-apps
 [jwt]: https://jwt.io
 [mongodb]: https://www.mongodb.com
 [node]: https://nodejs.org/
