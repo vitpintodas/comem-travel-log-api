@@ -12,7 +12,7 @@ const logLevels = [ 'trace', 'debug', 'info' ,'warn', 'error', 'fatal' ];
 const root = __dirname;
 
 const configFromEnvironment = {
-  baseUrl: process.env.BASE_URL,
+  baseUrl: process.env.BASE_URL || process.env.RENDER_EXTERNAL_URL,
   bcryptCost: parseEnvInt('BCRYPT_COST'),
   cors: parseEnvBoolean('CORS'),
   db: process.env.DATABASE_URI || process.env.DATABASE_URL || process.env.MONGODB_URI || process.env.MONGODB_URL,
