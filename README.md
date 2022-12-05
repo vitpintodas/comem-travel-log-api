@@ -55,9 +55,28 @@ npm run dev
 NODE_ENV=production npm start
 ```
 
-### Run the server on Render
+## Deploy on Render
 
-TODO
+### Fork the project 
+
+Start by forking this repository. This will create a copy of the project on which you will have complete admin privileges.
+
+You can fork by pressing the "fork" button at the top left of this page, or by clicking [this link][fork].
+
+### Setup the Database
+If you haven't yet created a MongoDB Atlas Cluster, follow the instructions from this guide: [Create a MongoDB cluster on MongoDB Atlas][mongodb-atlas-guide]
+
+### Create a Render Web Service
+Follow the instructions in the [Deploy the application to Render][render-deploy-guide] guide.
+
+The only difference between this deployment and what is in the guide are the following: 
+
+- The build command is **``npm ci``**
+- You can setup your environment variables before deployment, by clicking the **advanced** button. You will need to setup two variable:
+    -  **``DATABASE_URI``** which contains the connection information to your MongoDB Atlas Cluster. It should look a little something like this: ``mongodb+srv://<username>:<password>@<host>/?retryWrites=true&w=majority``
+    - **``SECRET``** which is a string of your choice used for generating your JWT tokens.
+
+
 
 ## Configuration
 
@@ -104,6 +123,9 @@ Script               | Description
 
 [bcrypt]: https://en.wikipedia.org/wiki/Bcrypt
 [dotenv]: https://www.npmjs.com/package/dotenv
+[fork]: https://github.com/MediaComem/comem-travel-log-api/fork
 [jwt]: https://jwt.io
 [mongodb]: https://www.mongodb.com
+[mongodb-atlas-guide]: https://github.com/MediaComem/comem-archioweb/blob/main/guides/deploy-in-the-cloud.md#create-a-mongodb-cluster-on-mongodb-atlas
 [node]: https://nodejs.org/
+[render-deploy-guide]: https://github.com/MediaComem/comem-archioweb/blob/main/guides/deploy-in-the-cloud.md#deploy-the-application-to-render
