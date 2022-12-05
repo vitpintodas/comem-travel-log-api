@@ -13,7 +13,7 @@ A sample API to develop a mobile application.
     - [First-time setup](#first-time-setup)
     - [Run the server in development mode with live reload](#run-the-server-in-development-mode-with-live-reload)
     - [Run the server in production mode](#run-the-server-in-production-mode)
-    - [Run the server on Render](#run-the-server-on-render)
+    - [Deploy on Render](#deploy-on-render)
 - [Configuration](#configuration)
 - [Scripts](#scripts)
 
