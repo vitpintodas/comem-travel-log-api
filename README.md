@@ -67,14 +67,11 @@ You can fork by pressing the "fork" button at the top left of this page, or by c
 If you haven't yet created a MongoDB Atlas Cluster, follow the instructions from this guide: [Create a MongoDB cluster on MongoDB Atlas][mongodb-atlas-guide]
 
 ### Create a Render Web Service
-Follow the instructions in the [Deploy the application to Render][render-deploy-guide] guide.
-
-The only difference between this deployment and what is in the guide are the following: 
-
+Follow the instructions in the [Deploy the application to Render][render-deploy-guide] guide, but by taking into account the following differences:
 - The build command is **``npm ci``**
-- You can setup your environment variables before deployment, by clicking the **advanced** button. You will need to setup two variable:
-    -  **``DATABASE_URI``** which contains the connection information to your MongoDB Atlas Cluster. It should look a little something like this: ``mongodb+srv://<username>:<password>@<host>/?retryWrites=true&w=majority``
-    - **``SECRET``** which is a string of your choice used for generating your JWT tokens.
+- You can setup your environment variables before deployment by clicking the **advanced** button. You will need to set two variables:
+    -  **``DATABASE_URI``**: contains the connection information to your MongoDB Atlas Cluster. It should look a little something like this: ``mongodb+srv://<username>:<password>@<host>/?retryWrites=true&w=majority``
+    - **``SECRET``**: a string of your choice used for generating JWT tokens.
 
 
 
