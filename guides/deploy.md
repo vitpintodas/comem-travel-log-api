@@ -41,6 +41,7 @@ You'll need to create three environment variables:
 | `SECRET` | Any string value. You can let Render generate a random value for you by clicking the "Generate" button |
 | `DATABASE_URL` | The connection string for your database user. You should have or will soon receive it |
 | `DATABASE_NAME` | The name of the database for your API. You should have or will soon receive it |
+| `CORS` | `true` - Wether your API can be requested by an app hosted on another domain |
 
 ![Render: create your environment variables](images/render-06-environment-variables.png)
 
