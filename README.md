@@ -64,13 +64,8 @@ Start by forking this repository. This will create a copy of the project on whic
 You can fork by pressing the "fork" button at the top left of this page, or by clicking [this link][fork].
 
 ### Create a Render Web Service
-Follow the instructions in the [Deploy the application to Render][render-deploy-guide] guide, but by taking into account the following differences:
-- The build command is **``npm ci``**
-- You can setup your environment variables before deployment by clicking the **advanced** button. You will need to set three variables:
-    - **``DATABASE_URI``**: contains the connection information to your MongoDB Atlas Cluster. It should look a little something like this: ``mongodb+srv://<username>:<password>@<host>/?retryWrites=true&w=majority``
-    - **``DATABASE_NAME``**: contains the name of the database on which your app will operate.
-    - **``SECRET``**: a string of your choice used for generating JWT tokens. You can let Render generate one for you by clicking the "Generate" button.
 
+Follow the instructions in the [Deploy the application to Render][render-deploy-guide] guide.
 
 ## Configuration
 
@@ -123,4 +118,4 @@ Script               | Description
 [mongodb]: https://www.mongodb.com
 [mongodb-atlas-guide]: https://github.com/MediaComem/comem-archioweb/blob/main/guides/deploy-in-the-cloud.md#create-a-mongodb-cluster-on-mongodb-atlas
 [node]: https://nodejs.org/
-[render-deploy-guide]: https://github.com/MediaComem/comem-archioweb/blob/main/guides/deploy-in-the-cloud.md#deploy-the-application-to-render
+[render-deploy-guide]: guides/deploy.md
