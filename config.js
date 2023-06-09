@@ -8,7 +8,7 @@ const pkg = require('./package');
 
 dotenv.config();
 
-const logLevels = [ 'trace', 'debug', 'info' ,'warn', 'error', 'fatal' ];
+const logLevels = [ 'trace', 'debug', 'info', 'warn', 'error', 'fatal' ];
 const root = __dirname;
 
 const configFromEnvironment = {
@@ -16,6 +16,7 @@ const configFromEnvironment = {
   bcryptCost: parseEnvInt('BCRYPT_COST'),
   cors: parseEnvBoolean('CORS'),
   db: process.env.DATABASE_URI || process.env.DATABASE_URL || process.env.MONGODB_URI || process.env.MONGODB_URL,
+  dbName: process.env.DATABASE_NAME,
   docs: {
     browser: process.env.DOCS_BROWSER,
     open: parseEnvBoolean('DOCS_OPEN'),
@@ -52,6 +53,8 @@ if (!isInteger(config.bcryptCost)) {
   throw new Error(`Configuration property "bcryptCost" must be an integer, but its type is ${typeof config.bcryptCost}`);
 } else if (config.bcryptCost < 1) {
   throw new Error(`Configuration property "bcryptCost" must be greater than or equal to 1, but its value is ${config.bcryptCost}`);
+} else if (typeof config.dbName !== 'string') {
+  throw new Error(`Configuration property "dbName" must be a string, but its type is ${typeof config.dbName}`);
 } else if (typeof config.db !== 'string') {
   throw new Error(`Configuration property "db" must be a string, but its type is ${typeof config.db}`);
 } else if (!config.db.match(/^mongodb(?:\+srv)?:\/\/[^\s]+$/)) {
@@ -85,13 +88,13 @@ function createLogger(name) {
 }
 
 function parseEnvBoolean(name) {
-  const value = process.env[name];
+  const value = process.env[ name ];
   return value !== undefined ? Boolean(value.match(/^(?:1|y|yes|t|true)$/i)) : undefined;
 }
 
 function parseEnvInt(name, strict = true) {
 
-  const value = process.env[name];
+  const value = process.env[ name ];
   if (value === undefined) {
     return;
   }

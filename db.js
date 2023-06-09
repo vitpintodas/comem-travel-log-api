@@ -25,7 +25,7 @@ mongoose.set('useNewUrlParser', true);
  * Connects to the database.
  */
 async function connect() {
-  await mongoose.connect(config.db);
+  await mongoose.connect(config.db, { dbName: 'demo-travel-log' });
 }
 
 module.exports = { connect };
