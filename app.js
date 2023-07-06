@@ -19,7 +19,14 @@ app.use(express.json());
 
 // Allow CORS (if enabled)
 if (config.cors) {
-  app.use(cors());
+  app.use(cors({
+    exposedHeaders: [
+      'Pagination-Page',
+      'Pagination-Page-Size',
+      'Pagination-Total',
+      'Pagination-Filtered-Total'
+    ]
+  }));
   expressLogger.debug('CORS is enabled');
 } else {
   expressLogger.debug('CORS is disabled');
