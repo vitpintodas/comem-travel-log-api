@@ -30,7 +30,7 @@ const configFromEnvironment = {
 const defaultConfig = {
   baseUrl: `http://localhost:${configFromEnvironment.port || 3000}`,
   bcryptCost: 10,
-  db: 'mongodb://localhost/comem-travel-log-api',
+  db: 'mongodb://localhost/hooplink-travel-log-api',
   cors: false,
   docs: {
     open: true
